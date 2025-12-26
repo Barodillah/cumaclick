@@ -1,36 +1,50 @@
 <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-  document.addEventListener("DOMContentLoaded", function () {
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
 
-      @if(session()->has('short_result'))
-          const result = @json(session('short_result'));
+    const modalEl = document.getElementById('resultModal');
+    if (!modalEl) return;
 
-          // isi field
-          document.getElementById('shortCodeInput').value = result.code;
-          document.getElementById('oldCode').value = result.code;
-          document.getElementById('originalUrlInput').value = result.destination;
+    const shortCodeInput = document.getElementById('shortCodeInput');
+    const oldCodeInput   = document.getElementById('oldCode');
+    const urlInput       = document.getElementById('originalUrlInput');
+    const previewLink    = document.getElementById('previewLink');
 
-          const previewLink = document.getElementById('previewLink');
-          previewLink.innerText = result.short_url;
-          previewLink.href = result.short_url;
+    @if(session()->has('short_result'))
+        const result = @json(session('short_result'));
 
-          // tampilkan modal
-          const modal = new bootstrap.Modal(
-              document.getElementById('resultModal')
-          );
-          modal.show();
-      @endif
+        shortCodeInput.value = result.code;
+        oldCodeInput.value   = result.code;
+        urlInput.value       = result.destination;
 
-  });
-  </script>
+        previewLink.innerText = result.short_url;
+        previewLink.href      = result.short_url;
+
+        new bootstrap.Modal(modalEl).show();
+    @endif
+
+    @if(session('open_result_modal') && $errors->has('short_code'))
+        // isi ulang dari old()
+        shortCodeInput.value = "{{ old('short_code') }}";
+        oldCodeInput.value   = "{{ old('old_code') }}";
+        urlInput.value       = "{{ old('destination_url') }}";
+
+        // preview tetap pakai old_code (link lama)
+        if (oldCodeInput.value) {
+            const link = `${window.location.origin}/${oldCodeInput.value}`;
+            previewLink.innerText = link;
+            previewLink.href      = link;
+        }
+
+        new bootstrap.Modal(modalEl).show();
+    @endif
+
+});
+</script>
     
     <script>
 document.addEventListener("DOMContentLoaded", function () {
-
-    /* ===============================
-       DRAG & DROP FILE PREVIEW
-    =============================== */
 
     const dropArea  = document.getElementById('dropArea');
     const fileInput = document.getElementById('fileInput');
@@ -77,11 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     }
-
-    /* ===============================
-       COPY TO CLIPBOARD
-    =============================== */
-
+    
     const copyBtn = document.getElementById("copyBtn");
     const previewLink = document.getElementById("previewLink");
 
@@ -97,10 +107,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
-
-    /* ===============================
-       SHORT CODE INPUT CLEANER
-    =============================== */
 
     const shortCodeInput = document.getElementById("shortCodeInput");
     const saveBtn = document.getElementById("saveBtn");

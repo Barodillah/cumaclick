@@ -74,7 +74,7 @@ class RedirectController extends Controller
              * - generate session token
              * - redirect ke secure file controller
              */
-            return redirect()->route('file.access', $shortLink->id);
+            return redirect()->route('file.preview', $shortLink->short_code);
         }
 
         // 11. Normal URL redirect (pakai countdown / preview)

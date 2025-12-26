@@ -13,6 +13,8 @@ class ShortlinkController extends Controller
     {
         $request->validate([
             'destination_url' => 'required|url'
+        ], [
+            'destination_url.url' => 'Masukkan URL yang valid',
         ]);
 
         do {
@@ -38,36 +40,50 @@ class ShortlinkController extends Controller
             'file' => 'required|file|max:5120'
         ]);
 
-        $path = $request->file('file')->store('uploads', 'private');
+        $uploadedFile = $request->file('file');
+        $originalName = $uploadedFile->getClientOriginalName();
 
+        // simpan file di storage private
+        $path = $uploadedFile->store('uploads', 'private');
+
+        // generate short code unik
         do {
             $shortCode = Str::random(6);
         } while (ShortLink::where('short_code', $shortCode)->exists());
 
+        // simpan ke database
         $short = ShortLink::create([
             'destination_type' => 'file',
             'destination_url'  => $path,
             'short_code'       => $shortCode,
+            'title'            => $originalName,  // nama file
+            'note'             => $originalName,  // default note sama nama file
         ]);
 
         return redirect()->back()->with('short_result', [
             'code'        => $short->short_code,
-            'destination' => 'FILE',
+            'destination' => $originalName,
             'short_url'   => url($short->short_code),
         ]);
     }
 
     public function update(Request $request)
     {
-        $request->validate([
+        // pastikan modal terbuka jika ada error
+        session()->flash('open_result_modal', true);
+
+        $validated = $request->validate([
             'old_code'   => 'required|exists:short_links,short_code',
             'short_code' => 'required|alpha_dash|min:3|max:50|unique:short_links,short_code',
+        ], [
+            'short_code.alpha_dash' => 'Hanya boleh huruf, angka, dash (-) dan underscore (_)',
+            'short_code.unique'     => 'Short code sudah digunakan, gunakan yang lain!',
         ]);
 
-        $short = ShortLink::where('short_code', $request->old_code)->firstOrFail();
+        $short = ShortLink::where('short_code', $validated['old_code'])->firstOrFail();
 
         $short->update([
-            'short_code' => $request->short_code,
+            'short_code' => $validated['short_code'],
         ]);
 
         return redirect()->back()->with('short_result', [

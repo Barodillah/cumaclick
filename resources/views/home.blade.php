@@ -37,8 +37,21 @@
                     @csrf
                     <div class="row g-2">
                         <div class="col-lg-9">
-                            <input type="text" name="destination_url" class="form-control" placeholder="https://example.com">
+                            <input 
+                                type="text" 
+                                name="destination_url"
+                                class="form-control @error('destination_url') is-invalid @enderror"
+                                placeholder="https://example.com/long-url"
+                                value="{{ old('destination_url') }}"
+                            >
+
+                            @error('destination_url')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
+
                         <div class="col-lg-3">
                             <button class="btn btn-primary w-100">
                                 <i class="fa-solid fa-bolt me-1"></i> Perpendek

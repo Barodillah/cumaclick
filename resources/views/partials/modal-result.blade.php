@@ -9,14 +9,32 @@
             <div class="modal-body">
                 <form method="POST" action="{{ route('shorten.update') }}">
                     @csrf
-                    <input type="hidden" name="old_code" id="oldCode">
-                    <input type="hidden" name="destination_url" id="originalUrlInput">
+                    <input type="hidden" name="old_code" id="oldCode" value="{{ old('old_code') }}">
+                    <input type="hidden" name="destination_url" id="originalUrlInput" value="{{ old('destination_url') }}">
 
                     <div class="mb-3">
                         <label class="form-label">Short Code</label>
-                        <input type="text" id="shortCodeInput" name="short_code" class="form-control">
-                        <small class="text-secondary"><em>*u can custom your short link</em></small>
+
+                        <input
+                            type="text"
+                            id="shortCodeInput"
+                            name="short_code"
+                            class="form-control @error('short_code') is-invalid @enderror"
+                            value="{{ old('short_code') }}"
+                            placeholder="contoh: my-link"
+                        >
+
+                        @error('short_code')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                        <small class="text-secondary">
+                            <em>*u can custom your short link</em>
+                        </small>
                     </div>
+
 
                     <button class="btn btn-primary" id="saveBtn">
                         <i class="fa-solid fa-floppy-disk me-2"></i> Save

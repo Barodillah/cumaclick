@@ -1,5 +1,7 @@
 <nav class="navbar-custom d-flex align-items-center justify-content-between px-4 py-3">
+<a href="{{ url('/') }}">
     <span class="brand fs-4 fw-bold">cuma.click</span>
+</a>    
 
     <div class="nav-user">
         @auth
