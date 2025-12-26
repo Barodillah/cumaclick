@@ -10,7 +10,7 @@
                 <form method="POST" action="{{ route('shorten.update') }}">
                     @csrf
                     <input type="hidden" name="old_code" id="oldCode">
-                    <input type="hidden" name="original_url" id="originalUrlInput">
+                    <input type="hidden" name="destination_url" id="originalUrlInput">
 
                     <div class="mb-3">
                         <label class="form-label">Short Code</label>

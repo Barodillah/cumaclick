@@ -5,7 +5,7 @@
     <div class="row g-4 justify-content-center align-items-start">
         
         {{-- Slot Iklan --}}
-        <div class="col-lg-3 col-md-6 order-1 order-lg-1">
+        <div class="col-lg-3 col-md-6 order-2 order-lg-1">
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex align-items-center justify-content-center">
 
@@ -33,7 +33,7 @@
         </div>
 
         {{-- Card Redirect --}}
-        <div class="col-lg-4 order-2 order-lg-2">
+        <div class="col-lg-4 order-1 order-lg-2">
             <div class="card p-4 shadow text-center">
                 <h5 class="mb-3">
                     <i class="fa-solid fa-hourglass-half me-2"></i>

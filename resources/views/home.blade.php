@@ -37,7 +37,7 @@
                     @csrf
                     <div class="row g-2">
                         <div class="col-lg-9">
-                            <input type="text" name="url" class="form-control" placeholder="https://example.com">
+                            <input type="text" name="destination_url" class="form-control" placeholder="https://example.com">
                         </div>
                         <div class="col-lg-3">
                             <button class="btn btn-primary w-100">

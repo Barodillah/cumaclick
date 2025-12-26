@@ -2,52 +2,81 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ShortLink;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class ShortlinkController extends Controller
 {
-    /**
-     * Proses shorten URL
-     */
     public function store(Request $request)
     {
-        // sementara dummy dulu (biar flow hidup)
-        $short = 'abc123';
+        $request->validate([
+            'destination_url' => 'required|url'
+        ]);
 
-        return redirect('/')
-            ->withFragment('result')
-            ->with([
-                'short' => $short,
-                'url'   => $request->url
-            ]);
+        do {
+            $shortCode = Str::random(6);
+        } while (ShortLink::where('short_code', $shortCode)->exists());
+
+        $short = ShortLink::create([
+            'destination_type' => 'url',
+            'destination_url'  => $request->destination_url,
+            'short_code'       => $shortCode,
+        ]);
+
+        return redirect()->back()->with('short_result', [
+            'code'        => $short->short_code,
+            'destination' => $short->destination_url,
+            'short_url'   => url($short->short_code),
+        ]);
     }
 
-    /**
-     * Update custom short code
-     */
-    public function update(Request $request)
-    {
-        // nanti isi logic update dari process.php
-        return back();
-    }
-
-    /**
-     * Upload file + shorten
-     */
     public function upload(Request $request)
     {
-        // nanti pindahkan logic upload dari process.php
-        return back();
+        $request->validate([
+            'file' => 'required|file|max:5120'
+        ]);
+
+        $path = $request->file('file')->store('uploads', 'private');
+
+        do {
+            $shortCode = Str::random(6);
+        } while (ShortLink::where('short_code', $shortCode)->exists());
+
+        $short = ShortLink::create([
+            'destination_type' => 'file',
+            'destination_url'  => $path,
+            'short_code'       => $shortCode,
+        ]);
+
+        return redirect()->back()->with('short_result', [
+            'code'        => $short->short_code,
+            'destination' => 'FILE',
+            'short_url'   => url($short->short_code),
+        ]);
     }
 
-    /**
-     * Redirect shortlink
-     */
-    public function redirect(string $code)
+    public function update(Request $request)
     {
-        // nanti ambil dari database
-        // sementara dummy
-        return redirect()->away('https://google.com');
-    }
-}
+        $request->validate([
+            'old_code'   => 'required|exists:short_links,short_code',
+            'short_code' => 'required|alpha_dash|min:3|max:50|unique:short_links,short_code',
+        ]);
 
+        $short = ShortLink::where('short_code', $request->old_code)->firstOrFail();
+
+        $short->update([
+            'short_code' => $request->short_code,
+        ]);
+
+        return redirect()->back()->with('short_result', [
+            'code'        => $short->short_code,
+            'destination' => $short->destination_type === 'url'
+                                ? $short->destination_url
+                                : 'FILE',
+            'short_url'   => url($short->short_code),
+        ]);
+    }
+
+}
