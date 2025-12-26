@@ -1,0 +1,213 @@
+/* ========== Simple Elegant Theme ========== */
+:root {
+  --bs-primary: #c86b82;   /* Muted Rose */
+  --bs-info: #3a6d8c;      /* Soft Navy */
+  --bs-success: #3f7f6b;   /* Muted Green */
+  --bs-warning: #e6cf7a;   /* Soft Gold */
+  --bs-danger: #d98b6c;    /* Soft Coral */
+
+  --bs-primary-rgb: 200, 107, 130;
+  --bs-info-rgb: 58, 109, 140;
+  --bs-success-rgb: 63, 127, 107;
+  --bs-warning-rgb: 230, 207, 122;
+  --bs-danger-rgb: 217, 139, 108;
+
+  --bs-body-bg: #fdfdfd;        /* clean white */
+  --bs-body-color: #343a40;     /* soft dark */
+  --bs-border-color: #e5e7eb;
+}
+
+@font-face {
+    font-family: 'Minecraftia';
+    src: url('rainyhearts.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* ===== Global ===== */
+body {
+  font-family: 'Minecraftia', sans-serif;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+a {
+  color: var(--bs-primary);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--bs-info);
+}
+
+/* ===== Navbar ===== */
+nav {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+nav .brand {
+  font-weight: 600;
+  color: var(--bs-primary);
+}
+
+/* ===== Cards & Modals ===== */
+.card-custom,
+.rounded-lg,
+.modal-content {
+  background-color: #ffffff;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+/* ===== Buttons ===== */
+.btn {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+  background-color: #b45a71;
+  border-color: #b45a71;
+}
+
+.btn-info {
+  background-color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+.btn-info:hover {
+  background-color: #325e79;
+}
+
+.btn-success {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+.btn-success:hover {
+  background-color: #356a5a;
+}
+
+.btn-warning {
+  background-color: var(--bs-warning);
+  border-color: var(--bs-warning);
+  color: #3a3a3a;
+}
+.btn-warning:hover {
+  background-color: #d6be63;
+}
+
+.btn-danger {
+  background-color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
+.btn-danger:hover {
+  background-color: #c97a5c;
+}
+
+/* ===== Inputs ===== */
+.form-control {
+  border-radius: 10px;
+  border: 1px solid var(--bs-border-color);
+  background-color: #ffffff;
+}
+.form-control:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.15rem rgba(var(--bs-primary-rgb), 0.15);
+}
+
+/* ===== Tabs ===== */
+.nav-pills .nav-link {
+  color: var(--bs-body-color);
+  border-radius: 10px;
+}
+.nav-pills .nav-link.active {
+  background-color: rgba(var(--bs-primary-rgb), 0.15);
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+/* ===== Upload Box ===== */
+#dropArea {
+  border: 2px dashed var(--bs-border-color);
+  border-radius: 14px;
+  padding: 40px;
+  background-color: #ffffff;
+  transition: all 0.25s ease;
+}
+#dropArea:hover {
+  border-color: var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.04);
+}
+
+/* ===== Alerts ===== */
+.alert {
+  border-radius: 12px;
+  border: none;
+  font-weight: 500;
+}
+
+.alert-primary {
+  background-color: rgba(var(--bs-primary-rgb), 0.15);
+  color: var(--bs-primary);
+}
+.alert-info {
+  background-color: rgba(var(--bs-info-rgb), 0.15);
+  color: var(--bs-info);
+}
+.alert-success {
+  background-color: rgba(var(--bs-success-rgb), 0.15);
+  color: var(--bs-success);
+}
+.alert-warning {
+  background-color: rgba(var(--bs-warning-rgb), 0.25);
+  color: #6b5b1f;
+}
+.alert-danger {
+  background-color: rgba(var(--bs-danger-rgb), 0.18);
+  color: var(--bs-danger);
+}
+
+.navbar-custom {
+    background: linear-gradient(90deg, #F7E9EC, #fceff2);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.brand {
+    letter-spacing: 0.5px;
+}
+
+.nav-user a {
+    font-weight: 500;
+    color: #333;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-user a:hover {
+    color: #c85b73;
+    transform: translateY(-1px);
+}
+
+.logout-link i {
+    font-size: 18px;
+}
+
+.ad-placeholder {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .ad-placeholder {
+        height: 120px;
+    }
+}
