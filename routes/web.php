@@ -6,6 +6,7 @@ use App\Http\Controllers\ShortlinkController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\LinkController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -13,9 +14,17 @@ Route::post('/shorten', [ShortlinkController::class, 'store'])->name('shorten');
 Route::post('/shorten/update', [ShortlinkController::class, 'update'])->name('shorten.update');
 Route::post('/upload', [ShortlinkController::class, 'upload'])->name('upload');
 
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login', [AuthController::class, 'doLogin'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('login', [AuthController::class, 'login'])->name('login.post');
+
+Route::get('register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('register', [AuthController::class, 'register'])->name('register.post');
+
+Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('links', [LinkController::class, 'index'])
+    ->middleware('auth')
+    ->name('links');
 
 Route::get('/f/{code}', [FileController::class, 'preview'])
     ->name('file.preview');

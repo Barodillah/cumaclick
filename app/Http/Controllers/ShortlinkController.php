@@ -25,6 +25,7 @@ class ShortlinkController extends Controller
             'destination_type' => 'url',
             'destination_url'  => $request->destination_url,
             'short_code'       => $shortCode,
+            'user_id'          => auth()->check() ? auth()->id() : null, // tambahkan user_id jika login
         ]);
 
         return redirect()->back()->with('short_result', [
@@ -56,8 +57,9 @@ class ShortlinkController extends Controller
             'destination_type' => 'file',
             'destination_url'  => $path,
             'short_code'       => $shortCode,
-            'title'            => $originalName,  // nama file
-            'note'             => $originalName,  // default note sama nama file
+            'title'            => $originalName,
+            'note'             => $originalName,
+            'user_id'          => auth()->check() ? auth()->id() : null, // tambahkan user_id jika login
         ]);
 
         return redirect()->back()->with('short_result', [
