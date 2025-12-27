@@ -92,29 +92,62 @@ class ShortlinkController extends Controller
 
     public function update(Request $request)
     {
-        // pastikan modal terbuka jika ada error
+        // Pastikan modal terbuka jika error
         session()->flash('open_result_modal', true);
 
+        // Ambil link berdasarkan old_code
+        $link = ShortLink::where('short_code', $request->old_code)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
         $validated = $request->validate([
-            'old_code'   => 'required|exists:short_links,short_code',
-            'short_code' => 'required|alpha_dash|min:3|max:50|unique:short_links,short_code',
+            'old_code' => [
+                'required',
+                'string',
+                'exists:short_links,short_code',
+            ],
+
+            'short_code' => [
+                'required',
+                'string',
+                'max:50',
+                'alpha_dash',
+                function ($attr, $value, $fail) use ($link) {
+
+                    // Jika tidak berubah, lewati cek
+                    if ($value === $link->short_code) {
+                        return;
+                    }
+
+                    $exists = ShortLink::where(function ($q) use ($value) {
+                            $q->where('short_code', $value)
+                            ->orWhere('custom_alias', $value);
+                        })
+                        ->where('id', '!=', $link->id)
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('Short code sudah digunakan.');
+                    }
+                },
+            ],
         ], [
-            'short_code.alpha_dash' => 'Hanya boleh huruf, angka, dash (-) dan underscore (_)',
-            'short_code.unique'     => 'Short code sudah digunakan, gunakan yang lain!',
+            'short_code.required'   => 'Short code wajib diisi.',
+            'short_code.alpha_dash' => 'Hanya boleh huruf, angka, dash (-) dan underscore (_).',
+            'short_code.max'        => 'Maksimal 50 karakter.',
         ]);
 
-        $short = ShortLink::where('short_code', $validated['old_code'])->firstOrFail();
-
-        $short->update([
+        // Update
+        $link->update([
             'short_code' => $validated['short_code'],
         ]);
 
         return redirect()->back()->with('short_result', [
-            'code'        => $short->short_code,
-            'destination' => $short->destination_type === 'url'
-                                ? $short->destination_url
+            'code'        => $link->short_code,
+            'destination' => $link->destination_type === 'url'
+                                ? $link->destination_url
                                 : 'FILE',
-            'short_url'   => url($short->short_code),
+            'short_url'   => url($link->short_code),
         ]);
     }
 

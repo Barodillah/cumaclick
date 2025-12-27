@@ -90,8 +90,8 @@
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST"
-                                  action="{{ route('links.delete', $link->short_code) }}"
-                                  onsubmit="return confirm('Are you sure you want to delete this link?');">
+                                action="{{ route('links.delete', $link->short_code) }}"
+                                class="delete-form">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="dropdown-item text-danger">
@@ -155,5 +155,29 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
     fetch("{{ route('links.search') }}?q=" + encodeURIComponent(this.value))
         .then(res => res.text())
         .then(html => document.getElementById("linkList").innerHTML = html);
+});
+</script>
+<script>
+document.addEventListener('submit', function (e) {
+    const form = e.target;
+
+    if (!form.classList.contains('delete-form')) return;
+
+    e.preventDefault();
+
+    Swal.fire({
+        title: 'Hapus link?',
+        text: 'Link yang dihapus tidak dapat dikembalikan.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, hapus',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
 });
 </script>

@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
 
     {{-- Favicon --}}
-    <link rel="icon" href="/favicon.png">
+    <link rel="icon" href="{{ asset('/favicon.png') }}" type="image/png">
 
     {{-- CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -34,6 +34,7 @@
     <!-- <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600;700&display=swap" rel="stylesheet"> -->
 
     <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 

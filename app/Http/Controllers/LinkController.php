@@ -53,8 +53,43 @@ class LinkController extends Controller
 
         // BASE RULES (AMAN)
         $rules = [
-            'short_code'     => 'required|string|max:50|unique:short_links,short_code,' . $link->id,
-            'custom_alias'   => 'nullable|string|max:50',
+            'short_code' => [
+                                'required',
+                                'string',
+                                'max:50',
+                                function ($attr, $value, $fail) use ($link) {
+                                    $exists = \App\Models\ShortLink::where(function ($q) use ($value) {
+                                        $q->where('short_code', $value)
+                                        ->orWhere('custom_alias', $value);
+                                    })
+                                    ->where('id', '!=', $link->id)
+                                    ->exists();
+
+                                    if ($exists) {
+                                        $fail('Short code sudah digunakan.');
+                                    }
+                                }
+                            ],
+
+                            'custom_alias' => [
+                                'nullable',
+                                'string',
+                                'max:50',
+                                function ($attr, $value, $fail) use ($link) {
+                                    if (!$value) return;
+
+                                    $exists = \App\Models\ShortLink::where(function ($q) use ($value) {
+                                        $q->where('short_code', $value)
+                                        ->orWhere('custom_alias', $value);
+                                    })
+                                    ->where('id', '!=', $link->id)
+                                    ->exists();
+
+                                    if ($exists) {
+                                        $fail('Custom alias sudah digunakan.');
+                                    }
+                                }
+                            ],
 
             'pin_code'       => 'nullable|string|digits:4',
             'password_hint'  => 'nullable|string|max:255',
@@ -109,8 +144,12 @@ class LinkController extends Controller
 
     public function clicks($shortCode)
     {
+        $user = auth()->user();
+
         $link = ShortLink::where('short_code', $shortCode)
-            ->where('user_id', auth()->id())
+            ->when($user->role !== 'admin', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
             ->firstOrFail();
 
         $clicks = $link->clicks()
@@ -121,7 +160,7 @@ class LinkController extends Controller
         $totalClicks  = $clicks->count();
         $uniqueClicks = $clicks->unique('ip_address')->count();
 
-        $deviceStats = $clicks->groupBy('device_type')->map->count();
+        $deviceStats  = $clicks->groupBy('device_type')->map->count();
         $browserStats = $clicks->groupBy('browser')->map->count();
         $countryStats = $clicks->groupBy('country')->map->count();
 
