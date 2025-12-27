@@ -22,9 +22,22 @@ Route::post('register', [AuthController::class, 'register'])->name('register.pos
 
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('links', [LinkController::class, 'index'])
-    ->middleware('auth')
-    ->name('links');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/links', [LinkController::class, 'index'])->name('links.index');
+    Route::get('/links/search', [LinkController::class, 'search'])->name('links.search');
+    
+    Route::delete('/links/{short_code}', [LinkController::class, 'destroy'])
+    ->name('links.delete');
+
+    Route::get('/links/{short_code}/edit', [LinkController::class, 'edit'])
+        ->name('links.edit');
+
+    Route::put('/links/{short_code}', [LinkController::class, 'update'])
+        ->name('links.update');
+
+    Route::get('/links/{short_code}/clicks', [LinkController::class, 'clicks'])
+        ->name('links.clicks');
+});
 
 Route::get('/f/{code}', [FileController::class, 'preview'])
     ->name('file.preview');
@@ -34,6 +47,9 @@ Route::get('/f/{code}/download', [FileController::class, 'download'])
 
 Route::get('/f/{code}/stream', [FileController::class, 'stream'])
     ->name('file.stream'); // untuk img/video/pdf
+
+Route::post('/{code}/pin', [RedirectController::class, 'submitPin'])
+    ->name('redirect.pin');
 
 Route::get('/{code}', [RedirectController::class, 'handle'])
     ->where('code', '[A-Za-z0-9]+');

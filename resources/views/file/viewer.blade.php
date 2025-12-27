@@ -2,9 +2,9 @@
 
 @section('content')
 
-    <p class="text-center">{{ $short->note }}</p>
+    <p class="text-center mt-3">{{ $short->note }}</p>
 
-<main class="container flex-fill">
+<main class="container flex-fill text-center">
 
 @if ($type === 'image')
     <img src="{{ route('file.stream', $short->short_code) }}" class="img-fluid rounded">

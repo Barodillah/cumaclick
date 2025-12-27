@@ -6,6 +6,7 @@ use App\Models\ShortLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 
 class ShortlinkController extends Controller
 {
@@ -17,21 +18,41 @@ class ShortlinkController extends Controller
             'destination_url.url' => 'Masukkan URL yang valid',
         ]);
 
+        // ===== Ambil TITLE dari URL =====
+        $pageTitle = null;
+
+        try {
+            $response = Http::timeout(5)->get($request->destination_url);
+
+            if ($response->ok()) {
+                preg_match('/<title>(.*?)<\/title>/is', $response->body(), $matches);
+                $pageTitle = $matches[1] ?? null;
+                $pageTitle = $pageTitle ? trim(html_entity_decode($pageTitle)) : null;
+            }
+        } catch (\Exception $e) {
+            $pageTitle = null; // gagal ambil title → tetap lanjut
+        }
+
+        // ===== Generate short code =====
         do {
             $shortCode = Str::random(6);
         } while (ShortLink::where('short_code', $shortCode)->exists());
 
+        // ===== Simpan =====
         $short = ShortLink::create([
             'destination_type' => 'url',
             'destination_url'  => $request->destination_url,
             'short_code'       => $shortCode,
-            'user_id'          => auth()->check() ? auth()->id() : null, // tambahkan user_id jika login
+            'title'            => $pageTitle,
+            'note'             => $pageTitle,
+            'user_id'          => auth()->check() ? auth()->id() : null,
         ]);
 
         return redirect()->back()->with('short_result', [
             'code'        => $short->short_code,
             'destination' => $short->destination_url,
             'short_url'   => url($short->short_code),
+            'title'       => $pageTitle,
         ]);
     }
 

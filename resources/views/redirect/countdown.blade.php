@@ -42,7 +42,7 @@
 
                 <p>Anda akan dialihkan ke:</p>
                 <div class="alert alert-secondary text-truncate" title="{{ $target }}">
-                    {{ $target }}
+                    {{ $url }}
                 </div>
 
                 <p>Redirect dalam <span id="counter">3</span> detik...</p>

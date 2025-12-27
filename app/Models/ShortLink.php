@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 
 class ShortLink extends Model
 {
@@ -79,5 +80,10 @@ class ShortLink extends Model
     public function reachLimit(): bool
     {
         return $this->max_click !== null && $this->click_count >= $this->max_click;
+    }
+
+    public function clicks()
+    {
+        return $this->hasMany(Click::class);
     }
 }
