@@ -22,18 +22,84 @@ class LinkController extends Controller
     public function search(Request $request)
     {
         $q = $request->q;
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+        $type = $request->type;
+        $status = $request->status;
+
         $user = Auth::user();
+        $now = now();
 
         $links = ShortLink::when($user->role !== 'admin', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->where(function ($query) use ($q) {
-                $query->where('short_code', 'like', "%{$q}%")
-                    ->orWhere('destination_url', 'like', "%{$q}%")
-                    ->orWhere('note', 'like', "%{$q}%");
-            })
-            ->latest()
-            ->get();
+                    $query->where('user_id', $user->id);
+                })
+                ->when($q, function ($query) use ($q) {
+                    $query->where('short_code', 'like', "%{$q}%")
+                        ->orWhere('destination_url', 'like', "%{$q}%")
+                        ->orWhere('note', 'like', "%{$q}%")
+                        ->orWhere('custom_alias', 'like', "%{$q}%")
+                        ->orWhere('title', 'like', "%{$q}%")
+                        ->orWhere('description', 'like', "%{$q}%");
+                })
+                ->when($startDate, function($query) use ($startDate) {
+                    $query->whereDate('created_at', '>=', $startDate);
+                })
+                ->when($endDate, function($query) use ($endDate) {
+                    $query->whereDate('created_at', '<=', $endDate);
+                })
+                ->when($type, function($query) use ($type) {
+                    $query->where('destination_type', $type);
+                })
+                ->when($status, function($query) use ($status, $now) {
+                    if($status === 'active') {
+                        $query->where('is_active', 1)
+                            ->whereNull('blocked_at')
+                            ->where(function($q) use ($now) {
+                                $q->whereNull('expired_at')
+                                    ->orWhere('expired_at', '>', $now);
+                            })
+                            ->where(function($q) use ($now) {
+                                $q->whereNull('active_from')
+                                    ->orWhere('active_from', '<=', $now);
+                            })
+                            ->where(function($q) use ($now) {
+                                $q->whereNull('active_until')
+                                    ->orWhere('active_until', '>=', $now);
+                            })
+                            ->where(function($q) {
+                                $q->whereNull('max_click')
+                                    ->orWhereColumn('click_count', '<', 'max_click');
+                            })
+                            ->where(function($q) {
+                                $q->where('one_time', 0)
+                                ->orWhere(function($q2) {
+                                    $q2->where('one_time', 1)
+                                        ->where('click_count', 0); // <-- gunakan where literal, bukan whereColumn
+                                });
+                            });
+                    } elseif($status === 'expired') {
+                        $query->where(function($q) use ($now) {
+                            $q->where('expired_at', '<', $now)
+                            ->orWhere(function($q2) use ($now) {
+                                $q2->whereNotNull('active_until')
+                                    ->where('active_until', '<', $now);
+                            })
+                            ->orWhere(function($q3) {
+                                $q3->whereNotNull('max_click')
+                                    ->whereColumn('click_count', '>=', 'max_click');
+                            })
+                            ->orWhere(function($q4) {
+                                $q4->where('one_time', 1)
+                                ->where('click_count', '>', 0); // <-- literal
+                            });
+                        });
+                    } elseif($status === 'blocked') {
+                        $query->where('is_active', 0)
+                            ->orWhereNotNull('blocked_at');
+                    }
+                })
+                ->latest()
+                ->get();
 
         return view('links.partials.list', compact('links'));
     }

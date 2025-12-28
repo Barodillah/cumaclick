@@ -136,5 +136,3 @@ qrModal.addEventListener('show.bs.modal', function (event) {
     }, 100);
 });
 </script>
-
-

@@ -147,6 +147,17 @@
                         <i class="fa-solid fa-tag me-1"></i>
                         No tags
                     </span>
+                    @if($link->abuse_score > 0)
+                    <span>
+                        <i class="fa-solid fa-exclamation-triangle me-1 text-danger"></i>
+                        {{ $link->abuse_score }} Abuse
+                    </span>
+                    @else
+                    <span>
+                        <i class="fa-solid fa-shield-halved me-1 text-success"></i>
+                        Safe
+                    </span>
+                    @endif
                 </div>
 
             </div>
@@ -160,12 +171,81 @@
 </div>
 @endforelse
 <script>
-document.getElementById("searchInput").addEventListener("keyup", function () {
-    fetch("{{ route('links.search') }}?q=" + encodeURIComponent(this.value))
+function fetchLinks() {
+    const q = document.getElementById('searchInput').value;
+    const startDate = document.getElementById('startDate')?.value || '';
+    const endDate = document.getElementById('endDate')?.value || '';
+    const type = document.getElementById('typeFilter')?.value || '';
+    const status = document.getElementById('statusFilter')?.value || '';
+
+    const params = new URLSearchParams({
+        q, startDate, endDate, type, status
+    });
+
+    fetch("{{ route('links.search') }}?" + params.toString())
         .then(res => res.text())
         .then(html => document.getElementById("linkList").innerHTML = html);
+}
+
+// Pencarian teks
+document.getElementById("searchInput").addEventListener("keyup", fetchLinks);
+
+// Filter tanggal (modal custom range)
+document.querySelectorAll('.quick-range').forEach(button => {
+    button.addEventListener('click', function() {
+        const days = parseInt(this.getAttribute('data-days'));
+        const end = new Date();
+        let start;
+
+        if(days === 1 && this.textContent.includes('hour')) {
+            start = new Date(end.getTime() - 60 * 60 * 1000);
+        } else if(days === 0) {
+            start = new Date();
+        } else {
+            start = new Date();
+            start.setDate(end.getDate() - days);
+        }
+
+        const formatDate = d => d.toISOString().split('T')[0];
+        document.getElementById('startDate').value = formatDate(start);
+        document.getElementById('endDate').value = formatDate(end);
+
+        fetchLinks(); // langsung reload data
+    });
 });
+
+// Filter tambahan (type/status)
+document.getElementById('typeFilter')?.addEventListener('change', fetchLinks);
+document.getElementById('statusFilter')?.addEventListener('change', fetchLinks);
+
+// Filter tanggal manual
+document.getElementById('startDate')?.addEventListener('change', fetchLinks);
+document.getElementById('endDate')?.addEventListener('change', fetchLinks);
+
+// Clear filters
+// Gunakan class untuk banyak tombol, misal class="clearFilters"
+document.querySelectorAll('.clearFilters').forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Reset semua input filter
+        const searchInput = document.getElementById('searchInput');
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        const typeFilter = document.getElementById('typeFilter');
+        const statusFilter = document.getElementById('statusFilter');
+
+        if(searchInput) searchInput.value = '';
+        if(startDate) startDate.value = '';
+        if(endDate) endDate.value = '';
+        if(typeFilter) typeFilter.value = '';
+        if(statusFilter) statusFilter.value = '';
+
+        // Reload data tanpa filter
+        fetchLinks();
+    });
+});
+
 </script>
+
 <script>
 document.addEventListener('submit', function (e) {
     const form = e.target;

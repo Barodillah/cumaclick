@@ -23,7 +23,6 @@ class RedirectController extends Controller
             ->orWhere('custom_alias', $code)
             ->first();
 
-        // 2. Tidak ditemukan
         if (!$shortLink) {
             return view('redirect.not-found');
         }
@@ -48,11 +47,31 @@ class RedirectController extends Controller
         }
 
         // 6. Limit klik
-        if (
-            $shortLink->max_click !== null &&
-            $shortLink->click_count >= $shortLink->max_click
-        ) {
+        if ($shortLink->max_click !== null && $shortLink->click_count >= $shortLink->max_click) {
             return view('redirect.expired');
+        }
+
+        // CEK SPAM KLIK BERDASARKAN IP
+        $ip = $request->ip();
+        $oneMinuteAgo = $now->copy()->subMinute();
+
+        $recentClicks = \App\Models\Click::where('short_link_id', $shortLink->id)
+            ->where('ip_address', $ip)
+            ->where('created_at', '>=', $oneMinuteAgo)
+            ->count();
+
+        // Jika lebih dari 50 klik dalam 1 menit → abuse_score +5
+        if ($recentClicks > 50) {
+            $shortLink->increment('abuse_score', 5);
+        }
+
+        // jika abuse_score >= 10 → blokir
+        if ($shortLink->abuse_score >= 10) {
+            $shortLink->update([
+                'is_active' => 0,
+                'blocked_at' => $now
+            ]);
+            return view('redirect.not-found');
         }
 
         // 7. PIN protection
@@ -71,48 +90,36 @@ class RedirectController extends Controller
             return view('redirect.expired');
         }
 
-        // 9. Update click (pakai waktu Jakarta)
-        // 9. Simpan click detail (HANYA 1x per request valid)
+        // 9. Update click
         $this->logClick($request, $shortLink);
-
-        // Update counter
         $shortLink->increment('click_count');
         $shortLink->update([
             'last_clicked_at' => $now
         ]);
 
-        // jika preview aktif
+        // Preview
         if ($shortLink->enable_preview) {
             return view('redirect.preview', [
                 'target' => $shortLink->destination_type === 'file'
                     ? route('file.preview', $shortLink->short_code)
                     : $shortLink->destination_url,
-
                 'note'  => $shortLink->note,
                 'url'   => $shortLink->destination_url,
                 'title' => $shortLink->title,
-                'ads'  => $ads,
+                'ads'   => $ads,
             ]);
         }
 
-        // Tampilkan countdown (1x request saja)
+        // Countdown
         return view('redirect.countdown', [
             'target' => $shortLink->destination_type === 'file'
                 ? route('file.preview', $shortLink->short_code)
                 : $shortLink->destination_url,
-
             'note'  => $shortLink->note,
             'url'   => $shortLink->destination_url,
             'title' => $shortLink->title,
-            'ads'  => $ads,
+            'ads'   => $ads,
         ]);
-
-        // STEP 2 — setelah countdown
-        if ($shortLink->destination_type === 'file') {
-            return redirect()->route('file.preview', $shortLink->short_code);
-        }
-
-        return redirect()->away($shortLink->destination_url);
     }
 
     public function submitPin(Request $request, string $code)
@@ -129,15 +136,23 @@ class RedirectController extends Controller
             return view('redirect.not-found');
         }
 
-        // PIN SALAH
+        // PIN SALAH → tambah abuse_score +2
         if ($request->pin !== $shortLink->pin_code) {
+            $shortLink->increment('abuse_score', 2);
+
+            // jika abuse_score >= 10 → blokir
+            if ($shortLink->abuse_score >= 10) {
+                $shortLink->update([
+                    'is_active' => 0,
+                    'blocked_at' => now('Asia/Jakarta')
+                ]);
+            }
+
             return back()->with('error', 'PIN yang Anda masukkan salah');
         }
 
         // PIN BENAR → simpan ke session
-        session([
-            'pin_passed_' . $shortLink->id => true
-        ]);
+        session(['pin_passed_' . $shortLink->id => true]);
 
         // balik ke URL utama (GET)
         return redirect()->to(url($code));
