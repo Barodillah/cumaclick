@@ -14,6 +14,11 @@ Route::post('/shorten', [ShortlinkController::class, 'store'])->name('shorten');
 Route::post('/shorten/update', [ShortlinkController::class, 'update'])->name('shorten.update');
 Route::post('/upload', [ShortlinkController::class, 'upload'])->name('upload');
 
+Route::get('/otp/verify', [AuthController::class, 'verifyOtpForm'])->name('otp.form');
+Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('otp.verify');
+
+Route::get('/resendotp', [AuthController::class, 'resendOtp'])->name('otp.resend');
+
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.post');
 
@@ -53,6 +58,9 @@ Route::get('/f/{code}/stream', [FileController::class, 'stream'])
 
 Route::post('/{code}/pin', [RedirectController::class, 'submitPin'])
     ->name('redirect.pin');
+
+Route::post('/{code}/otp', [RedirectController::class, 'submitOtp'])
+    ->name('redirect.otp');
 
 Route::get('/{code}', [RedirectController::class, 'handle'])
     ->where('code', '[A-Za-z0-9]+');

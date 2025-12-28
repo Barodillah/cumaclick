@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Click;
 use Jenssegers\Agent\Agent;
 use Illuminate\Support\Facades\Http;
+use App\Models\Otp;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 
 class RedirectController extends Controller
@@ -90,6 +93,27 @@ class RedirectController extends Controller
             return view('redirect.expired');
         }
 
+        if ($shortLink->require_otp) {
+            if (!$request->session()->get('otp_passed_' . $shortLink->short_code)) {
+                $otp = rand(1000, 9999);
+                $user = $shortLink->user;
+                Otp::create([
+                                'user_id' => $user->id,
+                                'code' => $otp,
+                                'type' => 'open_link',
+                                'expires_at' => now()->addMinutes(5),
+                            ]);
+
+                Mail::to($user->email)->send(new OtpMail($otp, 'open_link'));
+                return view('redirect.otp', [
+                    'code'  => $code,
+                    'email' => $user->email,
+                    'type'  => 'open_link',
+                    'ads'     => $ads,
+                ]);    
+            }
+        }
+
         // 9. Update click
         $this->logClick($request, $shortLink);
         $shortLink->increment('click_count');
@@ -153,6 +177,57 @@ class RedirectController extends Controller
 
         // PIN BENAR → simpan ke session
         session(['pin_passed_' . $shortLink->id => true]);
+
+        // balik ke URL utama (GET)
+        return redirect()->to(url($code));
+    }
+
+    public function submitOtp(Request $request, string $code)
+    {
+        $request->validate([
+            'code' => 'required|digits:4'
+        ]);
+
+        $shortLink = ShortLink::where('short_code', $code)
+            ->orWhere('custom_alias', $code)
+            ->first();
+
+        if (!$shortLink || !$shortLink->require_otp) {
+            return view('redirect.not-found');
+        }
+
+        $user = $shortLink->user;
+
+        // Ambil OTP berdasarkan user, code, dan type
+        $otp = Otp::where('user_id', $user->id)
+                ->where('code', $request->code)
+                ->where('type', 'open_link')
+                ->where('used', 0)
+                ->first();
+
+        if (!$otp) {
+            $shortLink->increment('abuse_score', 3);
+
+            // jika abuse_score >= 10 → blokir
+            if ($shortLink->abuse_score >= 10) {
+                $shortLink->update([
+                    'is_active' => 0,
+                    'blocked_at' => now('Asia/Jakarta')
+                ]);
+            }
+
+            return back()->with('error', 'OTP salah, coba lagi.');
+        }
+
+        if ($otp->expires_at < now()) {
+            return back()->with('error', 'OTP telah kadaluarsa, silakan minta OTP baru.');
+        }
+
+        // Tandai OTP sebagai used
+        $otp->update(['used' => 1]);
+
+        // Set session untuk membuka link
+        session(['otp_passed_' . $shortLink->short_code => true]);
 
         // balik ke URL utama (GET)
         return redirect()->to(url($code));

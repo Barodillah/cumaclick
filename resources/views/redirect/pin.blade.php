@@ -42,6 +42,28 @@
                         </div>
                     @endif
 
+                    {{-- HINT --}}
+                    @if(isset($hint) && !empty($hint))
+                    <a href="javascript:void(0)" 
+                    data-bs-toggle="popover" 
+                    data-bs-content="{{ $hint }}" 
+                    class="text-decoration-none d-block mb-3 text-muted">
+                        <i class="fa-solid fa-circle-info"></i> Hint
+                    </a>
+
+                    <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+                        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                            return new bootstrap.Popover(popoverTriggerEl, {
+                                trigger: 'hover',   // muncul saat hover
+                                placement: 'bottom'    // posisi di atas
+                            })
+                        })
+                    });
+                    </script>
+                    @endif
+
                     <button class="btn btn-primary w-100 d-none" id="submitBtn">
                         Open
                     </button>
