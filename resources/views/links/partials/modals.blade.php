@@ -136,3 +136,135 @@ qrModal.addEventListener('show.bs.modal', function (event) {
     }, 100);
 });
 </script>
+
+<!-- Modal Add Tags -->
+<!-- Modal Add Tags -->
+<div class="modal fade" id="addTagsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-1">
+                        <i class="fa-solid fa-tags me-1"></i> Add Tags
+                    </h5>
+                    <small class="text-muted">
+                        <span id="modalBaseUrl">{{ url('/') }}/</span><strong id="modalShortCode"></strong>
+                    </small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- FORM -->
+            <form id="addTagsForm" method="POST">
+                @csrf
+
+                <div class="modal-body">
+
+                    <label class="form-label">Tags</label>
+
+                    <!-- Badge container -->
+                    <div id="tagsContainer"
+                         class="border rounded p-2 d-flex flex-wrap gap-2 mb-2"
+                         style="min-height:42px"></div>
+
+                    <!-- Input -->
+                    <input type="text"
+                           class="form-control"
+                           id="tagsInput"
+                           placeholder="Type tag and press Enter">
+
+                    <!-- Hidden submit -->
+                    <input type="hidden" name="tags" id="tagsHidden">
+
+                    <div class="form-text">
+                        Press <b>Enter</b> or <b>,</b> to add tag
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Save Tags
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script>
+let tags = [];
+
+const modal = document.getElementById('addTagsModal');
+const form = document.getElementById('addTagsForm');
+const tagsInput = document.getElementById('tagsInput');
+const tagsContainer = document.getElementById('tagsContainer');
+const tagsHidden = document.getElementById('tagsHidden');
+const modalShortCode = document.getElementById('modalShortCode');
+
+/* Render badge tags */
+function renderTags() {
+    tagsContainer.innerHTML = '';
+
+    tags.forEach((tag, index) => {
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-info text-light d-flex align-items-center';
+        badge.innerHTML = `
+            ${tag}
+            <button type="button"
+                    class="btn-close btn-close-white ms-2"
+                    style="font-size:.6rem"></button>
+        `;
+
+        badge.querySelector('button').onclick = () => {
+            tags.splice(index, 1);
+            renderTags();
+        };
+
+        tagsContainer.appendChild(badge);
+    });
+
+    tagsHidden.value = tags.join(',');
+}
+
+/* Add tag via Enter / comma */
+tagsInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+
+        let value = tagsInput.value
+            .trim()
+            .replace(',', '')
+            .toLowerCase();
+
+        if (value && !tags.includes(value)) {
+            tags.push(value);
+            renderTags();
+        }
+
+        tagsInput.value = '';
+    }
+});
+
+/* Modal show */
+modal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const shortCode = button.getAttribute('data-shortcode');
+
+    modalShortCode.textContent = shortCode;
+    form.action = `/links/${shortCode}/tags`;
+});
+
+/* Reset ketika modal ditutup */
+modal.addEventListener('hidden.bs.modal', function () {
+    tags = [];
+    renderTags();
+    tagsInput.value = '';
+});
+</script>

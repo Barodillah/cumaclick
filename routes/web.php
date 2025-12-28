@@ -45,6 +45,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/links/{short_code}/observation', [LinkController::class, 'observation'])
         ->name('links.observation');
+
+    Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
+    Route::put('/profile/name', [AuthController::class, 'updateName'])->name('profile.updateName');
+    Route::put('/profile/password', [AuthController::class, 'updatePassword'])->name('profile.updatePassword');
 });
 
 Route::get('/f/{code}', [FileController::class, 'preview'])

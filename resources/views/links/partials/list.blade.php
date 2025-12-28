@@ -11,10 +11,10 @@
                     {{ $link->note ?? 'Untitled' }}
                 </div>
 
-                <div class="text-primary small">
+                <div class="@if($link->is_active) text-primary small @else text-muted small @endif">
                         {{ url($link->short_code) }}
                         <a href="javascript:void(0)">
-                        <i class="fa-regular fa-copy copyBtn"
+                        <i class="@if($link->is_active) fa-regular  fa-copy copyBtn @else fa-solid fa-ban text-muted @endif"
                         role="button"
                         data-link="{{ url($link->short_code) }}"></i>
                     </a>
@@ -87,11 +87,6 @@
                             @endif
                         @endauth
                         <li>
-                            <a href="{{ route('links.edit', $link->short_code) }}" class="dropdown-item">
-                                <i class="fa-solid fa-pen me-2"></i> Edit Link
-                            </a>
-                        </li>
-                        <li>
                             <a href="{{ route('links.clicks', $link->short_code) }}" class="dropdown-item">
                                 <i class="fa-solid fa-chart-simple me-2"></i> View Click Data
                             </a>
@@ -144,18 +139,60 @@
                         {{ $link->created_at->format('M d, Y') }}
                     </span>
                     <span>
+                        <a href=javascript:void(0)" class="text-decoration-none text-info"
+                        data-bs-toggle="modal" data-bs-target="#addTagsModal"
+                        data-shortcode="{{ $link->short_code }}">
                         <i class="fa-solid fa-tag me-1"></i>
                         No tags
+                        </a>
                     </span>
                     @if($link->abuse_score > 0)
                     <span>
                         <i class="fa-solid fa-exclamation-triangle me-1 text-danger"></i>
                         {{ $link->abuse_score }} Abuse
                     </span>
-                    @else
+                    @endif
+
+                    @if($link->pin_code != null or $link->require_otp != 0)
                     <span>
-                        <i class="fa-solid fa-shield-halved me-1 text-success"></i>
-                        Safe
+                        <i class="fa-solid fa-lock me-1"></i>
+                        @if($link->pin_code != null and $link->require_otp != 0)
+                            PIN & OTP
+                        @elseif($link->pin_code != null)
+                            PIN
+                        @elseif($link->require_otp != 0)
+                            OTP
+                        @endif
+                    </span>
+                    @endif
+
+                    @if($link->max_click != null or $link->one_time != 0)
+                    <span>
+                        <i class="fa-solid fa-arrow-pointer me-1"></i>
+                        @if($link->max_click != null)
+                            Max {{ $link->max_click }}
+                        @elseif($link->one_time != 0)
+                            One-time
+                        @endif
+                    </span>
+                    @endif
+
+                    @if($link->expired_at != null
+                    or $link->active_from != null
+                    or $link->active_until != null)
+                    <span>
+                        <i class="fa-solid fa-clock me-1"></i>
+                        @if($link->active_from != null)
+                            From {{ $link->active_from->format('H:i M d, Y') }}
+                        @endif
+                        @if($link->active_until != null)
+                            @if($link->active_from != null) - @endif
+                            Until {{ $link->active_until->format('H:i M d, Y') }}
+                        @endif
+                        @if($link->expired_at != null)
+                            @if($link->active_from != null or $link->active_until != null) - @endif
+                            Expired {{ $link->expired_at->format('H:i M d, Y') }}
+                        @endif
                     </span>
                     @endif
                 </div>

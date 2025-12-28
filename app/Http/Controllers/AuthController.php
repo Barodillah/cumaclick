@@ -222,4 +222,37 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('login');
     }
+
+    // profile
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('auth.profile', compact('user'));
+    }
+
+    public function updateName(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $user = auth()->user();
+        $user->name = $request->name;
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Name updated successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = auth()->user();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Password updated successfully.');
+    }
 }

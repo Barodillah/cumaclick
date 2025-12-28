@@ -6,11 +6,17 @@
     <div class="nav-user">
         @auth
             <span class="me-3 text-dark">
-                👋 Halo, <strong>{{ auth()->user()->name }}</strong>
+                <i class="fa-brands fa-bilibili me-1"></i> Halo, 
+                <a href="javascript:void(0)" data-bs-toggle="dropdown"><strong>{{ auth()->user()->name }}</strong></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="{{ route('profile') }}">
+                        <i class="fa-solid fa-user me-2"></i>Profile
+                    </a>
+                    <a class="dropdown-item" href="{{ route('logout') }}">
+                        <i class="fa-solid fa-power-off me-2"></i>Logout
+                    </a>
+                </div>
             </span>
-            <a href="{{ route('logout') }}" class="logout-link">
-                <i class="fa-solid fa-power-off"></i>
-            </a>
         @else
             <a href="{{ route('login') }}" class="login-link">
                 Login
