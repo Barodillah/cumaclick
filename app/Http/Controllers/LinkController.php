@@ -117,6 +117,7 @@ class LinkController extends Controller
         // CHECKBOX FIX (WAJIB)
         $data['is_active']   = $request->boolean('is_active');
         $data['one_time']    = $request->boolean('one_time');
+        $data['enable_preview'] = $request->boolean('enable_preview');
         $data['require_otp'] = $request->boolean('require_otp');
 
         $link->update($data);
@@ -180,4 +181,16 @@ class LinkController extends Controller
         ));
     }
 
+    public function observation($shortCode)
+    {
+        $user = auth()->user();
+
+        $link = ShortLink::where('short_code', $shortCode)
+            ->when($user->role !== 'admin', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->firstOrFail();
+
+        return view('links.observation', compact('link'));
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\ShortLink;
 use Illuminate\Http\Request;
 use App\Models\Click;
 use Jenssegers\Agent\Agent;
+use Illuminate\Support\Facades\Http;
 
 
 class RedirectController extends Controller
@@ -14,6 +15,8 @@ class RedirectController extends Controller
     {
         // WAKTU JAKARTA
         $now = now('Asia/Jakarta');
+
+        $ads = Http::withoutVerifying()->get('https://cuma.click/ads/api.php')->json();
 
         // 1. Cari berdasarkan short_code atau custom_alias
         $shortLink = ShortLink::where('short_code', $code)
@@ -57,7 +60,8 @@ class RedirectController extends Controller
             if (!$request->session()->get('pin_passed_' . $shortLink->id)) {
                 return view('redirect.pin', [
                     'code' => $code,
-                    'hint' => $shortLink->password_hint
+                    'hint' => $shortLink->password_hint,
+                    'ads'  => $ads,
                 ]);
             }
         }
@@ -77,16 +81,31 @@ class RedirectController extends Controller
             'last_clicked_at' => $now
         ]);
 
+        // jika preview aktif
+        if ($shortLink->enable_preview) {
+            return view('redirect.preview', [
+                'target' => $shortLink->destination_type === 'file'
+                    ? route('file.preview', $shortLink->short_code)
+                    : $shortLink->destination_url,
 
-        // Countdown
-        if (!$request->has('go')) {
-            return view('redirect.countdown', [
-                'target' => url()->current() . '?go=1',
-                'url'    => $shortLink->destination_url,
-                'note'   => $shortLink->note,
-                'title'  => $shortLink->title,
+                'note'  => $shortLink->note,
+                'url'   => $shortLink->destination_url,
+                'title' => $shortLink->title,
+                'ads'  => $ads,
             ]);
         }
+
+        // Tampilkan countdown (1x request saja)
+        return view('redirect.countdown', [
+            'target' => $shortLink->destination_type === 'file'
+                ? route('file.preview', $shortLink->short_code)
+                : $shortLink->destination_url,
+
+            'note'  => $shortLink->note,
+            'url'   => $shortLink->destination_url,
+            'title' => $shortLink->title,
+            'ads'  => $ads,
+        ]);
 
         // STEP 2 — setelah countdown
         if ($shortLink->destination_type === 'file') {

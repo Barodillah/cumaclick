@@ -17,7 +17,7 @@
 
     {{-- SUMMARY --}}
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Total Clicks</h6>
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Unique Clicks</h6>
@@ -33,7 +33,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Conversion Rate</h6>
@@ -47,7 +47,7 @@
 
     {{-- BREAKDOWN --}}
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-sm">
                 <div class="card-header fw-semibold">Devices</div>
                 <ul class="list-group list-group-flush">
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-sm">
                 <div class="card-header fw-semibold">Browsers</div>
                 <ul class="list-group list-group-flush">
@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 mb-3">
             <div class="card shadow-sm">
                 <div class="card-header fw-semibold">Countries</div>
                 <ul class="list-group list-group-flush">

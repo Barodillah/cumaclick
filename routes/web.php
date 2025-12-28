@@ -37,6 +37,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/links/{short_code}/clicks', [LinkController::class, 'clicks'])
         ->name('links.clicks');
+
+    Route::get('/links/{short_code}/observation', [LinkController::class, 'observation'])
+        ->name('links.observation');
 });
 
 Route::get('/f/{code}', [FileController::class, 'preview'])

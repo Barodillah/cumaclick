@@ -77,6 +77,15 @@
                         <i class="fa-solid fa-ellipsis"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        @auth
+                            @if(auth()->user()->role === 'admin')
+                                <li>
+                                    <a href="{{ route('links.observation', $link->short_code) }}" class="dropdown-item">
+                                        <i class="fa-solid fa-link me-2"></i> Link Observation
+                                    </a>
+                                </li>
+                            @endif
+                        @endauth
                         <li>
                             <a href="{{ route('links.edit', $link->short_code) }}" class="dropdown-item">
                                 <i class="fa-solid fa-pen me-2"></i> Edit Link

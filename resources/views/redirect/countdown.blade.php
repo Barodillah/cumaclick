@@ -3,34 +3,6 @@
 @section('content')
 <div class="container py-5">
     <div class="row g-4 justify-content-center align-items-start">
-        
-        {{-- Slot Iklan --}}
-        <div class="col-lg-3 col-md-6 order-2 order-lg-1">
-            <div class="card shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-center">
-
-                    {{-- GANTI DENGAN SCRIPT IKLAN --}}
-                    <div class="ad-slot text-center w-100">
-                        <small class="text-muted d-block mb-2">Iklan</small>
-
-                        <div class="ad-placeholder">
-                            <span>Responsive Ads Here</span>
-                        </div>
-
-                        {{-- contoh Google AdSense --}}
-                        {{--
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-client="ca-pub-XXXX"
-                             data-ad-slot="XXXX"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                        --}}
-                    </div>
-
-                </div>
-            </div>
-        </div>
 
         {{-- Card Redirect --}}
         <div class="col-lg-4 order-1 order-lg-2">
@@ -60,33 +32,8 @@
             </div>
         </div>
 
-        {{-- Slot Iklan --}}
-        <div class="col-lg-3 col-md-6 order-3 order-lg-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body d-flex align-items-center justify-content-center">
-
-                    {{-- GANTI DENGAN SCRIPT IKLAN --}}
-                    <div class="ad-slot text-center w-100">
-                        <small class="text-muted d-block mb-2">Iklan</small>
-
-                        <div class="ad-placeholder">
-                            <span>Responsive Ads Here</span>
-                        </div>
-
-                        {{-- contoh Google AdSense --}}
-                        {{--
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-client="ca-pub-XXXX"
-                             data-ad-slot="XXXX"
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                        --}}
-                    </div>
-
-                </div>
-            </div>
-        </div>
+        {{-- SLOT IKLAN KIRI --}}
+        @include('redirect.partials.ads')
 
     </div>
 </div>

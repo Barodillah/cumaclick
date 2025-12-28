@@ -2,10 +2,12 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="row justify-content-center align-items-center">
+    <div class="row g-4 justify-content-center align-items-center">
 
-        <div class="col-lg-4">
+        {{-- CARD PIN --}}
+        <div class="col-lg-4 order-1 order-lg-2">
             <div class="card p-4 shadow text-center">
+
                 <h5 class="mb-3">
                     <i class="fa-solid fa-lock text-warning me-2"></i>
                     Link ini terkunci
@@ -17,12 +19,12 @@
                     <div class="d-flex justify-content-center gap-2 mb-3">
                         @for ($i = 1; $i <= 4; $i++)
                             <input type="text"
-                                inputmode="numeric"
-                                pattern="[0-9]*"
-                                maxlength="1"
-                                class="form-control text-center pin-input"
-                                style="width:60px;height:60px;font-size:24px;"
-                                required>
+                                   inputmode="numeric"
+                                   pattern="[0-9]*"
+                                   maxlength="1"
+                                   class="form-control text-center pin-input"
+                                   style="width:60px;height:60px;font-size:24px;"
+                                   required>
                         @endfor
                     </div>
 
@@ -45,12 +47,18 @@
                     </button>
                 </form>
 
-                <a href="/" class="text-decoration-none d-block mt-3">close</a>
+                <a href="/" class="text-decoration-none d-block mt-3 text-muted">
+                    close
+                </a>
             </div>
         </div>
 
+        {{-- SLOT IKLAN KIRI --}}
+        @include('redirect.partials.ads')
+
     </div>
 </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('.pin-input');
@@ -69,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hiddenPin.value = pin;
 
             if (pin.length === 4) {
-                form.submit(); // auto submit
+                form.submit();
             }
         });
 
@@ -83,5 +91,4 @@ document.addEventListener('DOMContentLoaded', () => {
     inputs[0].focus();
 });
 </script>
-
 @endsection
