@@ -1,7 +1,7 @@
 @extends('layouts.master')
 @section('title', 'Edit Profile')
 @section('content')
-<div class="container mt-5">
+<div class="container mt-4">
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -11,7 +11,7 @@
             {{ session('error') }}
         </div>
     @endif
-    <h2 class="mb-4"><a href="{{ route('links.index') }}"><i class="fas fa-angle-left me-2"></i></a>Edit Profile</h2>
+    <h4 class="mb-4"><a href="{{ route('links.index') }}"><i class="fas fa-angle-left me-2"></i></a>Edit Profile</h4>
 
     {{-- Section Update Name --}}
     <div class="card mb-4">

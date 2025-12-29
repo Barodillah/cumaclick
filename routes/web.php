@@ -41,6 +41,7 @@ Route::get('/forgot/reset', [AuthController::class, 'resetPasswordForm'])->name(
 Route::post('/forgot/reset', [AuthController::class, 'resetPassword'])->name('forgot.reset.post');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [LinkController::class, 'dashboard'])->name('links.dashboard');
     Route::get('/links', [LinkController::class, 'index'])->name('links.index');
     Route::get('/links/search', [LinkController::class, 'search'])->name('links.search');
     

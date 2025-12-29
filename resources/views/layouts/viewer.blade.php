@@ -35,56 +35,12 @@
 
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        .countdown-number {
-            font-size: 1.4rem;
-            font-weight: 700;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: .8; }
-            50% { transform: scale(1.15); opacity: 1; }
-            100% { transform: scale(1); opacity: .8; }
-        }
-
-        .progress {
-            height: 10px;
-            border-radius: 50px;
-            overflow: hidden;
-            background: #e9ecef;
-        }
-
-        .progress-bar {
-            background: linear-gradient(
-                90deg,
-                #B45A71,
-                #F7E9EC
-            );
-            box-shadow: 0 0 12px rgba(180, 90, 113, 0.6);
-            transition: width .1s linear;
-        }
-
-        .redirect-card {
-            animation: fadeInUp .6s ease;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
+    <script src="https://pl28358542.effectivegatecpm.com/a0/f0/8f/a0f08f09d88c14cee42b6b4266bad37a.js"></script>
 </head>
 <body>
 
 @include('partials.navbar')
-@include('partials.navlink')
+
 @yield('content')
 
 @include('partials.modal-result')

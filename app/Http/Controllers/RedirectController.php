@@ -134,6 +134,16 @@ class RedirectController extends Controller
             ]);
         }
 
+        // jika klik count masih dibawah 5 click melalui basic redirect
+        if ($shortLink->click_count <= 6) {
+            return view('redirect.basic', [
+                'target' => $shortLink->destination_type === 'file'
+                    ? route('file.preview', $shortLink->short_code)
+                    : $shortLink->destination_url,
+                'ads'   => $ads,
+            ]);
+        }
+
         // Countdown
         return view('redirect.countdown', [
             'target' => $shortLink->destination_type === 'file'

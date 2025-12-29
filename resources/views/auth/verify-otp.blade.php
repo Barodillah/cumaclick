@@ -5,7 +5,7 @@
     <div class="container-fluid page-body-wrapper full-page-wrapper">
         <div class="content-wrapper d-flex align-items-center auth px-0">
             <div class="row w-100 mx-0">
-                <div class="col-lg-6 mx-auto">
+                <div class="col-lg-6 col-md-9 mx-auto">
 
                     <div class="card p-4 shadow text-center">
 

@@ -6,7 +6,7 @@
 
         {{-- Card Redirect --}}
         <div class="col-lg-4 order-1 order-lg-2">
-            <div class="card p-4 shadow text-center">
+            <div class="card p-4 shadow text-center redirect-card">
                 <h5 class="mb-3">
                     <i class="fa-solid fa-hourglass-half me-2"></i>
                     Tunggu sebentar...
@@ -17,7 +17,11 @@
                     {{ $url }}
                 </div>
 
-                <p>Redirect dalam <span id="counter">3</span> detik...</p>
+                <p>
+                    Redirect dalam
+                    <span id="counter" class="countdown-number">3</span>
+                    detik...
+                </p>
 
                 <div class="progress mb-3">
                     <div id="progressBar"
@@ -39,25 +43,41 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    let count = 3;
-    const counter = document.getElementById('counter');
-    const bar = document.getElementById('progressBar');
+document.addEventListener('DOMContentLoaded', () => {
+
     const target = @json($target);
 
-    bar.style.transition = "width 3s linear";
-    bar.style.width = "100%";
+    const duration = 5000; // 5 detik (ms)
+    const startTime = performance.now();
 
-    function tick() {
-        counter.innerText = count;
-        if (count <= 0) {
-            window.location.href = target;
+    const counter = document.getElementById('counter');
+    const bar = document.getElementById('progressBar');
+
+    function animate(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Progress bar smooth
+        bar.style.width = `${progress * 100}%`;
+
+        // Countdown akurat (5 → 4 → 3 → 2 → 1 → 0)
+        const remaining = Math.max(
+            0,
+            Math.ceil((duration - elapsed) / 1000)
+        );
+        counter.innerText = remaining;
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            // ekstra delay kecil biar UX terasa halus
+            setTimeout(() => {
+                window.location.href = target;
+            }, 200);
         }
-        count--;
-        setTimeout(tick, 1000);
     }
 
-    tick();
+    requestAnimationFrame(animate);
 });
 </script>
 @endsection
