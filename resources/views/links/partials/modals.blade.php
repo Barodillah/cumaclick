@@ -166,8 +166,9 @@ qrModal.addEventListener('show.bs.modal', function (event) {
 
                     <!-- Badge container -->
                     <div id="tagsContainer"
-                         class="border rounded p-2 d-flex flex-wrap gap-2 mb-2"
-                         style="min-height:42px"></div>
+                        class="border rounded p-2 d-flex flex-wrap gap-2 mb-2 d-none"
+                        style="min-height:42px"></div>
+
 
                     <!-- Input -->
                     <input type="text"
@@ -217,6 +218,14 @@ const modalShortCode = document.getElementById('modalShortCode');
 function renderTags() {
     tagsContainer.innerHTML = '';
 
+    if (tags.length === 0) {
+        tagsContainer.classList.add('d-none');
+        tagsHidden.value = '';
+        return;
+    }
+
+    tagsContainer.classList.remove('d-none');
+
     tags.forEach((tag, index) => {
         const badge = document.createElement('span');
         badge.className = 'badge bg-info text-light d-flex align-items-center';
@@ -237,6 +246,7 @@ function renderTags() {
 
     tagsHidden.value = tags.join(',');
 }
+
 
 /* Add tag via Enter / comma */
 tagsInput.addEventListener('keydown', function (e) {
