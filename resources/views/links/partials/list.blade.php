@@ -14,10 +14,10 @@
                 <div class="@if($link->is_active) text-primary small @else text-muted small @endif">
                         {{ url($link->short_code) }}
                         <a href="javascript:void(0)">
-                        <i class="@if($link->is_active) fa-regular  fa-copy copyBtn @else fa-solid fa-ban text-muted @endif"
+                        <i class="@if($link->is_active) fa-regular  fa-copy copyBtn @else  @endif"
                         role="button"
                         data-link="{{ url($link->short_code) }}"></i>
-                    </a>
+                    </a> @if(!$link->is_active) <span class="badge bg-secondary">Inactive</span> @endif
                 </div>
 
             </div>
@@ -58,7 +58,7 @@
                     <a href="{{ route('links.edit', $link->short_code) }}" class="btn btn-sm btn-light">
                         <i class="fa-solid fa-pen"></i>
                     </a>
-
+                    @if($link->is_active)
                     <button class="btn btn-sm btn-light"
                             data-bs-toggle="modal"
                             data-bs-target="#showBarcode"
@@ -72,7 +72,7 @@
                             data-share="{{ $link->short_code }}">
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
-
+                    @endif
                     <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">
                         <i class="fa-solid fa-ellipsis"></i>
                     </button>
@@ -132,7 +132,7 @@
                         <a class="text-decoration-none text-info"
                         href="{{ route('links.clicks', $link->short_code) }}">
                         <i class="fa-solid fa-chart-simple me-1"></i>
-                        Click data</a>
+                        {{ $link->click_count }} Click</a>
                     </span>
                     <span>
                         <i class="fa-regular fa-calendar me-1"></i>

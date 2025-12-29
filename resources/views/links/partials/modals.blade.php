@@ -16,6 +16,19 @@
                 </p>
 
                 <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <a id="copyLinkBtn" href="#" class="btn btn-secondary"
+                        onclick="navigator.clipboard.writeText(document.getElementById('shareLink').href)">
+                        <i class="fa-solid fa-copy"></i>
+                    </a>
+                    <script>
+                        document.getElementById('copyLinkBtn').addEventListener('click', function() {
+                            const originalContent = this.innerHTML;
+                            this.innerHTML = '<i class="fa-solid fa-check"></i>';
+                            setTimeout(() => {
+                                this.innerHTML = originalContent;
+                            }, 2000);
+                        });
+                    </script>
                     <a id="shareWhatsApp" target="_blank" class="btn btn-success">
                         <i class="fa-brands fa-whatsapp"></i>
                     </a>
