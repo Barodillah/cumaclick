@@ -22,7 +22,7 @@
                     @csrf
                     <div class="mb-3 text-start">
                         <label>Email</label>
-                        <input type="text" name="email" placeholder="Masukkan password"
+                        <input type="text" name="email" placeholder="Masukkan email"
                          class="form-control" value="{{ old('email') }}" required>
                     </div>
                     <div class="mb-3 text-start">
