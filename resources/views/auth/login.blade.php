@@ -12,17 +12,25 @@
                         {{ $errors->first() }}
                     </div>
                 @endif
+                @if (session('success'))
+                    <div class="alert alert-success">
+                    {{ session('success') }}
+                    </div>
+                @endif
 
                 <form method="POST" action="{{ route('login.post') }}">
                     @csrf
                     <div class="mb-3 text-start">
                         <label>Email</label>
-                        <input type="text" name="email" class="form-control" required>
+                        <input type="text" name="email" placeholder="Masukkan password"
+                         class="form-control" value="{{ old('email') }}" required>
                     </div>
                     <div class="mb-3 text-start">
                         <label>Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <input type="password" name="password" placeholder="Masukkan password"
+                         class="form-control" required>
                     </div>
+                    <a href="{{ route('forgot') }}" class="d-block mb-3">Forgot Your Password?</a>
                     <button class="btn btn-primary w-100">Login</button>
                 </form>
 

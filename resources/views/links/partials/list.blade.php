@@ -143,7 +143,11 @@
                         data-bs-toggle="modal" data-bs-target="#addTagsModal"
                         data-shortcode="{{ $link->short_code }}">
                         <i class="fa-solid fa-tag me-1"></i>
+                        @if($link->tags->count() > 0)
+                            {{ $link->tags->count() }} tags
+                        @else
                         No tags
+                        @endif
                         </a>
                     </span>
                     @if($link->abuse_score > 0)
@@ -214,9 +218,10 @@ function fetchLinks() {
     const endDate = document.getElementById('endDate')?.value || '';
     const type = document.getElementById('typeFilter')?.value || '';
     const status = document.getElementById('statusFilter')?.value || '';
+    const tag = document.getElementById('hasTagsFilter')?.value || '';
 
     const params = new URLSearchParams({
-        q, startDate, endDate, type, status
+        q, startDate, endDate, type, status, tag
     });
 
     fetch("{{ route('links.search') }}?" + params.toString())
@@ -254,6 +259,8 @@ document.querySelectorAll('.quick-range').forEach(button => {
 // Filter tambahan (type/status)
 document.getElementById('typeFilter')?.addEventListener('change', fetchLinks);
 document.getElementById('statusFilter')?.addEventListener('change', fetchLinks);
+document.getElementById('hasTagsFilter')
+    ?.addEventListener('change', fetchLinks);
 
 // Filter tanggal manual
 document.getElementById('startDate')?.addEventListener('change', fetchLinks);
@@ -269,12 +276,14 @@ document.querySelectorAll('.clearFilters').forEach(btn => {
         const endDate = document.getElementById('endDate');
         const typeFilter = document.getElementById('typeFilter');
         const statusFilter = document.getElementById('statusFilter');
+        const tagFilter = document.getElementById('hasTagsFilter');
 
         if(searchInput) searchInput.value = '';
         if(startDate) startDate.value = '';
         if(endDate) endDate.value = '';
         if(typeFilter) typeFilter.value = '';
         if(statusFilter) statusFilter.value = '';
+        if(tagFilter) tagFilter.value = '';
 
         // Reload data tanpa filter
         fetchLinks();

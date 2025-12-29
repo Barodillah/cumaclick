@@ -255,4 +255,71 @@ class AuthController extends Controller
 
         return redirect()->route('profile')->with('success', 'Password updated successfully.');
     }
+
+    public function forgotForm()
+    {
+        return view('auth.forgot');
+    }
+
+    public function sendOtpForgot(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        // Cek apakah email ada di database
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->with('error', 'Email tidak terdaftar.');
+        }
+
+        // Generate OTP
+        $otp = rand(100000, 999999);
+
+        // Simpan OTP baru
+        Otp::create([
+            'user_id'    => $user->id,
+            'code'       => $otp,
+            'type'       => 'password_reset',          // tipe khusus agar OTP tidak campur dengan registrasi
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
+        // Kirim email OTP
+        Mail::to($user->email)->send(new OtpMail($otp, 'password_reset'));
+
+        // Redirect ke form OTP sama seperti registrasi
+        return redirect()->route('otp.form', ['email' => $user->email, 'type'  => 'password_reset'])
+                        ->with('success', 'Kode OTP berhasil dikirim ke email Anda.');
+    }
+
+    public function resetPasswordForm()
+    {
+        return view('auth.reset');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->with('error', 'User tidak ditemukan.');
+        }
+
+        // Update password
+        $user->update([
+            'password' => $request->password,
+        ]);
+
+        // Hapus session reset
+        session()->forget('reset_email');
+
+        return redirect()->route('login')
+                        ->with('success', 'Password berhasil direset. Silakan login.');
+    }
 }

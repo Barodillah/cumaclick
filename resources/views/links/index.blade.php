@@ -156,6 +156,13 @@
                                 </select>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="hasTagsFilter" class="form-label">Tags</label>
+                                <select id="hasTagsFilter" name="tag" class="form-select">
+                                    <option value="">-- Select Tag --</option>
+                                </select>
+                            </div>
+
                             <div class="modal-footer">
                                 <a href="javascript:void(0)" class="btn btn-outline-secondary clearFilters"><i class="fa-solid fa-xmark me-1"></i> Clear all filters</a>
                                 <button type="button" data-bs-dismiss="modal" class="btn btn-primary">Apply</button>
@@ -185,4 +192,21 @@
 </div>
 
 @include('links.partials.modals')
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    fetch("{{ route('tags.distinct') }}")
+        .then(res => res.json())
+        .then(tags => {
+            const select = document.getElementById('hasTagsFilter');
+            tags.forEach(tag => {
+                const opt = document.createElement('option');
+                opt.value = tag;
+                opt.textContent = tag;
+                select.appendChild(opt);
+            });
+        });
+});
+</script>
+
 @endsection

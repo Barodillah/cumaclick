@@ -45,4 +45,14 @@ class User extends Authenticatable
     {
         return $this->role === 'user';
     }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    public function shortLinks()
+    {
+        return $this->hasMany(ShortLink::class);
+    }
 }

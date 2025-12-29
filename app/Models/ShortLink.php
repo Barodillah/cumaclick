@@ -86,4 +86,10 @@ class ShortLink extends Model
     {
         return $this->hasMany(Click::class);
     }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
+    }
+
 }

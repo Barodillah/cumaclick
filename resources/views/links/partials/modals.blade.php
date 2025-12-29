@@ -171,9 +171,14 @@ qrModal.addEventListener('show.bs.modal', function (event) {
 
                     <!-- Input -->
                     <input type="text"
-                           class="form-control"
-                           id="tagsInput"
-                           placeholder="Type tag and press Enter">
+                        class="form-control"
+                        id="tagsInput"
+                        list="tagsSuggestionList"
+                        autocomplete="off"
+                        placeholder="Type tag and press Enter or , to add">
+
+                    <datalist id="tagsSuggestionList"></datalist>
+
 
                     <!-- Hidden submit -->
                     <input type="hidden" name="tags" id="tagsHidden">
@@ -259,6 +264,14 @@ modal.addEventListener('show.bs.modal', function (event) {
 
     modalShortCode.textContent = shortCode;
     form.action = `/links/${shortCode}/tags`;
+
+    // Load existing tags
+    fetch(`/links/${shortCode}/tags`)
+        .then(res => res.json())
+        .then(data => {
+            tags = data;       // array of tag names
+            renderTags();
+        });
 });
 
 /* Reset ketika modal ditutup */
@@ -268,3 +281,33 @@ modal.addEventListener('hidden.bs.modal', function () {
     tagsInput.value = '';
 });
 </script>
+<script>
+const datalist = document.getElementById('tagsSuggestionList');
+let suggestionTimeout = null;
+
+tagsInput.addEventListener('input', function () {
+    const q = this.value.trim();
+
+    if (q.length < 1) {
+        datalist.innerHTML = '';
+        return;
+    }
+
+    clearTimeout(suggestionTimeout);
+
+    suggestionTimeout = setTimeout(() => {
+        fetch(`/tags/suggestions?q=${encodeURIComponent(q)}`)
+            .then(res => res.json())
+            .then(data => {
+                datalist.innerHTML = '';
+                data.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    datalist.appendChild(option);
+                });
+            });
+    }, 250); // debounce ringan
+});
+</script>
+
+

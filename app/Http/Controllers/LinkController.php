@@ -26,6 +26,7 @@ class LinkController extends Controller
         $endDate = $request->endDate;
         $type = $request->type;
         $status = $request->status;
+        $tag = $request->tag;
 
         $user = Auth::user();
         $now = now();
@@ -49,6 +50,11 @@ class LinkController extends Controller
                 })
                 ->when($type, function($query) use ($type) {
                     $query->where('destination_type', $type);
+                })
+                ->when($tag, function ($query) use ($tag) {
+                    $query->whereHas('tags', function ($q) use ($tag) {
+                        $q->where('name', $tag);
+                    });
                 })
                 ->when($status, function($query) use ($status, $now) {
                     if($status === 'active') {

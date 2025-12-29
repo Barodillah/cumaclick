@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\TagController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -27,6 +28,18 @@ Route::post('register', [AuthController::class, 'register'])->name('register.pos
 
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
+// Forgot Password - Form Input Email
+Route::get('/forgot', [AuthController::class, 'forgotForm'])->name('forgot');
+
+// Proses Kirim OTP ke Email
+Route::post('/forgot', [AuthController::class, 'sendOtpForgot'])->name('forgot.send');
+
+// Form Reset Password Baru
+Route::get('/forgot/reset', [AuthController::class, 'resetPasswordForm'])->name('forgot.reset');
+
+// Proses Simpan Password Baru
+Route::post('/forgot/reset', [AuthController::class, 'resetPassword'])->name('forgot.reset.post');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/links', [LinkController::class, 'index'])->name('links.index');
     Route::get('/links/search', [LinkController::class, 'search'])->name('links.search');
@@ -45,6 +58,18 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/links/{short_code}/observation', [LinkController::class, 'observation'])
         ->name('links.observation');
+
+    Route::post('/links/{shortCode}/tags', [TagController::class, 'store'])
+        ->name('links.addTags');
+
+    Route::get('/tags/suggestions', [TagController::class, 'suggestions'])
+        ->name('tags.suggestions');
+
+    Route::get('/links/{shortCode}/tags', [TagController::class, 'getTags'])
+    ->name('links.getTags');
+
+    Route::get('/tags/distinct', [TagController::class, 'distinctByUser'])
+    ->name('tags.distinct');
 
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::put('/profile/name', [AuthController::class, 'updateName'])->name('profile.updateName');

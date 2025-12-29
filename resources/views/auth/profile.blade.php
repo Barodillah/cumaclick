@@ -15,8 +15,12 @@
 
     {{-- Section Update Name --}}
     <div class="card mb-4">
-        <div class="card-header">Update Name</div>
+        <div class="card-header">Update Profile</div>
         <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" value="{{ $user->email }}" disabled>
+            </div>
             <form action="{{ route('profile.updateName') }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -32,7 +36,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <button type="submit" class="btn btn-primary">Update Name</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Update</button>
             </form>
         </div>
     </div>
@@ -66,7 +70,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <button type="submit" class="btn btn-primary">Update Password</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Update Password</button>
             </form>
         </div>
     </div>
