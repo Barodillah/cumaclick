@@ -8,7 +8,7 @@
         My Links
     </a>
     <a href="{{ route('links.premium') }}" class="nav-item nav-link @if (Request::is('premium')) active @endif flex-fill text-center">
-        <i class="fa-solid fa-coins me-1"></i> 50 Coins
+        <i class="fa-solid fa-coins me-1"></i> {{ $coinBalance }} Coins
     </a>
 </div>
 @endif

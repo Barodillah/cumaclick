@@ -12,7 +12,7 @@
                         <small class="text-muted">Your Balance</small>
                         <h1 class="mb-0 fw-semibold mt-2">
                             <i class="fa-solid fa-coins text-warning me-1"></i>
-                            50 Coins
+                            {{ $balance }} Coins
                         </h1>
                     </div>
                     <span class="badge bg-light text-dark px-3 py-2">
@@ -131,6 +131,90 @@
             </div>
 
         </div>
+
+        <div class="col-lg-12"> 
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">
+                            <i class="fa-solid fa-wallet me-1"></i>
+                            Wallet Transaction History
+                        </h6>
+
+                        <span class="badge bg-primary">
+                            Balance: {{ number_format($balance) }} coin
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    @if($isAdmin)
+                                        <th>User</th>
+                                    @endif
+                                    <th>Tipe</th>
+                                    <th>Amount</th>
+                                    <th>Source</th>
+                                    <th>Description</th>
+                                    <th>Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($transactions as $trx)
+                                    <tr>
+                                        @if($isAdmin)
+                                            <td>
+                                                {{ $trx->wallet->user->email ?? '-' }}
+                                            </td>
+                                        @endif
+
+                                        <td>
+                                            <span class="badge 
+                                                {{ $trx->type === 'credit' ? 'bg-success' : 'bg-danger' }}">
+                                                {{ strtoupper($trx->type) }}
+                                            </span>
+                                        </td>
+
+                                        <td class="{{ $trx->type === 'credit' ? 'text-success' : 'text-danger' }}">
+                                            {{ $trx->type === 'credit' ? '+' : '-' }}
+                                            {{ number_format($trx->amount) }}
+                                        </td>
+
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ $trx->source ?? '-' }}
+                                            </small>
+                                        </td>
+
+                                        <td>
+                                            <small>
+                                                {{ $trx->description ?? '-' }}
+                                            </small>
+                                        </td>
+
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ $trx->created_at->format('d M Y H:i') }}
+                                            </small>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ $isAdmin ? 6 : 5 }}" class="text-center text-muted py-4">
+                                            Belum ada transaksi
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 <script>

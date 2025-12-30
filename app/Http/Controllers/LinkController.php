@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ShortLink;
+use App\Models\Wallet;
+use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Auth;
 
 class LinkController extends Controller
@@ -360,6 +362,27 @@ class LinkController extends Controller
 
     public function premium()
     {
-        return view('links.premium');
+        $user = Auth::user();
+        $wallet = $user->wallet;
+
+        $query = WalletTransaction::with('wallet.user')
+            ->latest();
+
+        if ($user->role !== 'admin') {
+            // user biasa → hanya wallet sendiri
+            if ($wallet) {
+                $query->where('wallet_id', $wallet->id);
+            } else {
+                $query->whereRaw('1 = 0'); // tidak ada data
+            }
+        }
+
+        $transactions = $query->limit(50)->get();
+
+        return view('links.premium', [
+            'balance' => $wallet?->balance ?? 0,
+            'transactions' => $transactions,
+            'isAdmin' => $user->role === 'admin',
+        ]);
     }
 }

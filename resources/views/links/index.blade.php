@@ -12,7 +12,6 @@
         </div>
     @endif
 
-
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-semibold mb-0">My Links</h4>
@@ -208,5 +207,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 </script>
+
+
+@php
+    $showBonusModal = false;
+
+    if (auth()->check() && auth()->user()->wallet) {
+        $showBonusModal = ! auth()
+            ->user()
+            ->wallet
+            ->transactions()
+            ->exists();
+    }
+@endphp
+@if ($showBonusModal)
+<div class="modal fade" id="welcomeBonusModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    🎉 Selamat Datang!
+                </h5>
+            </div>
+
+            <div class="modal-body text-center">
+                <p class="mb-2">
+                    Bonus login untuk Anda
+                </p>
+                <h3 class="fw-bold text-warning mb-3">
+                    <i class="fa-solid fa-sack-dollar me-1"></i> 10 Coin Gratis
+                </h3>
+                <p class="text-muted">
+                    Gunakan coin ini untuk mencoba fitur premium
+                </p>
+            </div>
+
+            <div class="modal-footer border-0 justify-content-center">
+                <form action="{{ route('wallet.claim-register-bonus') }}" method="POST">
+                    @csrf
+                    <button class="btn btn-warning px-4">
+                        <i class="fa-solid fa-coins me-1"></i> Claim 10 Coin
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = new bootstrap.Modal(
+            document.getElementById('welcomeBonusModal')
+        );
+        modal.show();
+    });
+</script>
+@endif
 
 @endsection

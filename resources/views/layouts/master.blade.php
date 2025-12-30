@@ -168,13 +168,6 @@
         </a>
     </div>
 </div>
-
-@endif
-@endauth
-
-@include('partials.modal-result')
-@include('partials.scripts')
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('adsModal');
@@ -183,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let reopenTimeout;
 
     function openAds() {
+        if (document.getElementById('welcomeBonusModal')) {
+            return; // ❌ tahan ads kalau bonus ada
+        }
         modal.classList.remove('hidden');
     }
 
@@ -199,6 +195,11 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', closeAds);
 });
 </script>
+@endif
+@endauth
+
+@include('partials.modal-result')
+@include('partials.scripts')
 
 </body>
 </html>

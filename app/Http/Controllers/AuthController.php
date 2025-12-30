@@ -12,6 +12,8 @@ use App\Mail\OtpMail;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Models\ShortLink;
+use App\Models\Wallet;
+use App\Models\WalletTransaction;
 
 class AuthController extends Controller
 {
@@ -110,23 +112,40 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
+        DB::transaction(function () use ($request, &$user) {
+
+            // 1️⃣ Create user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+
+            // 2️⃣ Create wallet (balance 0)
+            $user->wallet()->create([
+                'balance' => 0,
+            ]);
+
+            // 3️⃣ Generate OTP
+            $otp = rand(100000, 999999);
+
+            Otp::create([
+                'user_id' => $user->id,
+                'code' => $otp,
+                'type' => 'email_verification',
+                'expires_at' => now()->addMinutes(5),
+            ]);
+
+            // 4️⃣ Send OTP email
+            Mail::to($user->email)->send(
+                new OtpMail($otp, 'email_verification')
+            );
+        });
+
+        return redirect()->route('otp.form', [
             'email' => $request->email,
-            'password' => $request->password,
+            'type'  => 'email_verification'
         ]);
-
-        $otp = rand(100000, 999999);
-
-        Otp::create([
-            'user_id' => $user->id,
-            'code' => $otp,
-            'type' => 'email_verification',
-            'expires_at' => now()->addMinutes(5),
-        ]);
-
-        Mail::to($user->email)->send(new OtpMail($otp, 'email_verification'));
-        return redirect()->route('otp.form', ['email' => $user->email,'type'  => 'email_verification']);
     }
 
     public function resendOtp(Request $request)

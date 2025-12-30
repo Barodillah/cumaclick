@@ -56,4 +56,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShortLink::class);
     }
+
+    public function wallet()
+    {
+        return $this->hasOne(\App\Models\Wallet::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
+
 }

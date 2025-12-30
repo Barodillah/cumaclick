@@ -8,6 +8,7 @@ use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\WalletController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -41,7 +42,19 @@ Route::get('/forgot/reset', [AuthController::class, 'resetPasswordForm'])->name(
 Route::post('/forgot/reset', [AuthController::class, 'resetPassword'])->name('forgot.reset.post');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/wallet', [WalletController::class, 'walletControl'])->name('admin.wallet.index');
+
+    Route::post('/wallet/adjust', [WalletController::class, 'adjustUser'])
+        ->name('admin.wallet.adjust');
+
+    Route::post('/wallet/admin-adjust', [WalletController::class, 'adjustAdmin'])
+        ->name('admin.wallet.admin.adjust');
+
     Route::post('/claim', [LinkController::class, 'claim'])->name('claim');
+
+    Route::post('/wallet/claim-register-bonus', 
+        [WalletController::class, 'claimRegisterBonus']
+    )->name('wallet.claim-register-bonus');
 
     Route::get('/dashboard', [LinkController::class, 'dashboard'])->name('links.dashboard');
     Route::get('/premium', [LinkController::class, 'premium'])->name('links.premium');

@@ -137,7 +137,7 @@
 
     @auth
         <div class="text-center my-3">
-            <a href="{{ route('links.index') }}" class="text-dark">
+            <a href="{{ route('links.index') }}" class="text-dark fw-semibold">
                 <i class="fa-solid fa-clipboard-list me-2"></i> Lihat Semua Shortlink Anda
             </a>
         </div>
