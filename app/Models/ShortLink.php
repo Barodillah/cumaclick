@@ -34,6 +34,7 @@ class ShortLink extends Model
         'description',
         'enable_preview',
         'note',
+        'enable_ads',
         'created_ip',
         'created_ua',
     ];
@@ -43,6 +44,7 @@ class ShortLink extends Model
         'one_time'       => 'boolean',
         'require_otp'    => 'boolean',
         'enable_preview' => 'boolean',
+        'enable_ads'     => 'boolean',
         'blocked_at'     => 'datetime',
         'active_from'    => 'datetime',
         'active_until'   => 'datetime',

@@ -80,6 +80,62 @@
             }
         }
     </style>
+    <style>
+        .ads-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .ads-modal.hidden {
+            display: none;
+        }
+
+        .ads-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            position: relative;
+            max-width: 340px;
+        }
+
+        .ads-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+
+            background: #B45A71;
+            color: #fff;
+            border: none;
+
+            width: 32px;
+            aspect-ratio: 1 / 1; /* KUNCI BULAT */
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+            line-height: 1; /* PENTING */
+            padding: 0;
+
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 480px) {
+            .ads-close {
+                width: 36px;
+                font-size: 22px;
+            }
+        }
+
+    </style>
 </head>
 <body>
 
@@ -87,8 +143,62 @@
 @include('partials.navlink')
 @yield('content')
 
+@auth
+@if(auth()->user()->enabled_ads === false)
+
+<!-- MODAL ADS -->
+<div id="adsModal" class="ads-modal hidden">
+    <div class="ads-content justify-content-center text-center">
+        <button class="ads-close" id="closeAds"><i class="fas fa-times"></i></button>
+
+        <!-- IKLAN -->
+        <script>
+            atOptions = {
+                'key' : '4e384a8c295d8194f5d4a36f1411df38',
+                'format' : 'iframe',
+                'height' : 250,
+                'width' : 300,
+                'params' : {}
+            };
+        </script>
+        <script src="https://www.highperformanceformat.com/4e384a8c295d8194f5d4a36f1411df38/invoke.js"></script>
+        
+        <a class="btn btn-sm btn-warning mt-2" href="{{ route('links.premium') }}">
+            <i class="fa-solid fa-coins me-1"></i> Tukar coins untuk menghilangkan iklan
+        </a>
+    </div>
+</div>
+
+@endif
+@endauth
+
 @include('partials.modal-result')
 @include('partials.scripts')
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('adsModal');
+    const closeBtn = document.getElementById('closeAds');
+
+    let reopenTimeout;
+
+    function openAds() {
+        modal.classList.remove('hidden');
+    }
+
+    function closeAds() {
+        modal.classList.add('hidden');
+
+        // buka lagi setelah 30 detik
+        reopenTimeout = setTimeout(openAds, 30000);
+    }
+
+    // buka pertama kali setelah 10 detik
+    setTimeout(openAds, 10000);
+
+    closeBtn.addEventListener('click', closeAds);
+});
+</script>
 
 </body>
 </html>

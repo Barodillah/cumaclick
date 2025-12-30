@@ -35,6 +35,25 @@
                     </ul>
                 </div>
             </div>
+
+            {{-- Ads Free --}}
+            @if(auth()->user()->enabled_ads)
+            <div class="alert alert-info text-center mb-4">
+                You have enabled Ad-Free experience.
+            </div>
+            @else
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">Enable Ad-Free Experience</h5>
+                    <p class="text-muted mb-3">
+                        By enabling this option, you will not see ads when redirecting through your links.
+                    </p>
+                    <a href="#" class="btn btn-warning w-100">
+                        <i class="fa-solid fa-coins me-1"></i> Enable Ad-Free for 20 Coins
+                    </a>
+                </div>
+            </div>
+            @endif
         </div>
         <div class="col-lg-8">
             {{-- Purchase Card --}}

@@ -48,11 +48,12 @@ return new class extends Migration {
             // Anti abuse
             $table->unsignedTinyInteger('abuse_score')->default(0);
 
-            // Preview & metadata
+            // Preview, ads & metadata
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->boolean('enable_preview')->default(false);
             $table->text('note')->nullable();
+            $table->boolean('enable_ads')->default(true);
 
             // Creator info (anonymous friendly)
             $table->ipAddress('created_ip')->nullable();

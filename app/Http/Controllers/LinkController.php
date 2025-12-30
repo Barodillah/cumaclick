@@ -191,6 +191,7 @@ class LinkController extends Controller
         $data['one_time']    = $request->boolean('one_time');
         $data['enable_preview'] = $request->boolean('enable_preview');
         $data['require_otp'] = $request->boolean('require_otp');
+        $data['enable_ads']  = $request->boolean('enable_ads');
 
         $link->update($data);
 
@@ -270,6 +271,8 @@ class LinkController extends Controller
     {
         $data = $request->validate([
             'short_code' => 'required|string|exists:short_links,short_code',
+        ], [
+            'short_code.exists' => 'Short Code tidak ditemukan.',
         ]);
 
         $link = ShortLink::where('short_code', $data['short_code'])->firstOrFail();

@@ -13,7 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'email_verified_at',
+        'name', 'email', 'password', 'role', 'email_verified_at', 'enabled_ads',
     ];
 
     protected $hidden = [
@@ -22,6 +22,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'enabled_ads'      => 'boolean',
     ];
 
     // relasi ke OTP

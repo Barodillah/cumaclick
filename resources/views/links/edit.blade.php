@@ -230,6 +230,13 @@
                                {{ old('enable_preview', $link->enable_preview) ? 'checked' : '' }}>
                         <label class="form-check-label">Enable Preview</label>
                     </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" name="enable_ads"
+                               class="form-check-input"
+                               {{ old('enable_ads', $link->enable_ads) ? 'checked' : '' }}>
+                        <label class="form-check-label">Enable Ads</label>
+                    </div>
                 </div>
             </div>
         </div>

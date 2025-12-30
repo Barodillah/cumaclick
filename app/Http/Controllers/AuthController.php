@@ -32,16 +32,28 @@ class AuthController extends Controller
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value !== 'adminlink' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
-                        $fail('The '.$attribute.' must be a valid email address.');
+                        $fail('Email harus berupa alamat email yang valid.');
                     }
                 },
             ],
             'password' => 'required',
         ]);
 
+        // Cek user berdasarkan email
         $user = User::where('email', $request->email)->first();
 
-        if ($user->role != 'admin' && is_null($user->email_verified_at)) {
+        // Jika email belum terdaftar → arahkan ke register
+        if (!$user) {
+            return redirect()
+                ->route('register')
+                ->withErrors([
+                    'email' => 'Email belum terdaftar. Silakan daftar terlebih dahulu.',
+                ])
+                ->withInput($request->only('email'));
+        }
+
+        // Jika bukan admin dan email belum terverifikasi
+        if ($user->role !== 'admin' && is_null($user->email_verified_at)) {
 
             $otp = Otp::where('user_id', $user->id)
                 ->where('type', 'email_verification')
@@ -69,9 +81,13 @@ class AuthController extends Controller
             ]);
         }
 
+        // Proses login
         if (Auth::attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('links.index'))->with('success', 'Login berhasil, welcome back!');
+
+            return redirect()
+                ->intended(route('links.index'))
+                ->with('success', 'Login berhasil, welcome back!');
         }
 
         return back()->withErrors([

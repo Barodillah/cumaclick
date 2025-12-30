@@ -135,12 +135,22 @@ class RedirectController extends Controller
         }
 
         // jika klik count masih dibawah 5 click melalui basic redirect
-        if ($shortLink->click_count <= 6) {
+        if ($shortLink->click_count <= 5) {
             return view('redirect.basic', [
                 'target' => $shortLink->destination_type === 'file'
                     ? route('file.preview', $shortLink->short_code)
                     : $shortLink->destination_url,
                 'ads'   => $ads,
+            ]);
+        }
+
+        // jika menonaktifkan iklan
+        if (!$shortLink->enable_ads) {
+            return view('redirect.basic', [
+                'target' => $shortLink->destination_type === 'file'
+                    ? route('file.preview', $shortLink->short_code)
+                    : $shortLink->destination_url,
+                'ads'   => null,
             ]);
         }
 
