@@ -265,4 +265,98 @@ class LinkController extends Controller
 
         return view('links.observation', compact('link'));
     }
+
+    public function claim(Request $request)
+    {
+        $data = $request->validate([
+            'short_code' => 'required|string|exists:short_links,short_code',
+        ]);
+
+        $link = ShortLink::where('short_code', $data['short_code'])->firstOrFail();
+
+        if ($link->user_id && $link->user_id !== auth()->id()) {
+            return back()->withErrors([
+                'short_code' => 'Shortlink ini sudah dimiliki oleh pengguna lain.'
+            ]);
+        }
+
+        // Cek apakah link sudah dimiliki
+        if ($link->user_id) {
+            return redirect()->back()
+                ->withErrors(['short_code' => 'Shortlink ini sudah dimiliki oleh pengguna lain.'])
+                ->withFragment('claim');
+        }
+
+        // Assign link ke user saat ini
+        $link->user_id = auth()->id();
+        $link->save();
+
+        return redirect()->route('links.edit', $link->short_code)
+            ->with('msg', 'Shortlink berhasil diklaim dan sekarang menjadi milik Anda.');
+    }
+
+    public function dashboard()
+    {
+        $user = auth()->user();
+
+        // BASE QUERY (scope user / admin)
+        $baseQuery = ShortLink::query();
+
+        if ($user->role !== 'admin') {
+            $baseQuery->where('user_id', $user->id);
+        }
+
+        /* =========================
+        | TOP 5 UNIQUE CLICK
+        ========================= */
+        $topLinks = (clone $baseQuery)
+            ->withCount([
+                'clicks as unique_click_count' => function ($q) {
+                    $q->select(\DB::raw('COUNT(DISTINCT ip_address)'));
+                }
+            ])
+            ->orderByDesc('unique_click_count')
+            ->limit(5)
+            ->get();
+
+        /* =========================
+        | STATISTIK
+        ========================= */
+        $totalLinks = (clone $baseQuery)->count();
+
+        $totalClicks = (clone $baseQuery)->sum('click_count');
+
+        $uniqueClicks = \App\Models\Click::whereIn(
+                'short_link_id',
+                (clone $baseQuery)->pluck('id')
+            )
+            ->distinct('ip_address')
+            ->count('ip_address');
+
+        $conversionRate = $totalLinks > 0
+            ? ($totalClicks / $totalLinks) * 100
+            : 0;
+
+        /* =========================
+        | LIST LINK (DEFAULT VIEW)
+        ========================= */
+        $links = (clone $baseQuery)
+            ->latest()
+            ->when($user->role === 'admin', fn ($q) => $q->with('user'))
+            ->get();
+
+        return view('links.dashboard', compact(
+            'links',
+            'totalLinks',
+            'totalClicks',
+            'uniqueClicks',
+            'conversionRate',
+            'topLinks'
+        ));
+    }
+
+    public function premium()
+    {
+        return view('links.premium');
+    }
 }

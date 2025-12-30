@@ -11,13 +11,27 @@
         </p>
     </section>
 
+    {{-- Alerts --}}
+    @if(session('msg'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('msg') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     {{-- Card --}}
     <div class="rounded-lg border p-2 bg-white/10 backdrop-blur-lg border-white/20 shadow-2xl mb-4">
 
         {{-- Tabs --}}
         <ul class="nav nav-pills justify-content-center bg-black/20 rounded-md p-1">
             <li class="nav-item flex-fill">
-                <button class="nav-link active w-100" data-bs-toggle="tab" data-bs-target="#url">
+                <button class="nav-link @if(!$errors->has('short_code')) active @endif w-100" data-bs-toggle="tab" data-bs-target="#url">
                     <i class="fa-solid fa-link me-2"></i> Perpendek URL
                 </button>
             </li>
@@ -26,13 +40,20 @@
                     <i class="fa-solid fa-folder-open me-2"></i> Unggah File
                 </button>
             </li>
+            @auth
+            <li class="nav-item flex-fill">
+                <button class="nav-link @if($errors->has('short_code')) active @endif w-100" data-bs-toggle="tab" data-bs-target="#claim">
+                    <i class="fa-solid fa-key me-2"></i> Claim Shortlink
+                </button>
+            </li>
+            @endauth
         </ul>
 
         {{-- Content --}}
-        <div class="tab-content p-4 mt-3">
+        <div class="tab-content p-2 mt-1">
 
             {{-- URL --}}
-            <div class="tab-pane fade show active" id="url">
+            <div class="tab-pane fade @if(!$errors->has('short_code')) show active @endif" id="url">
                 <form method="POST" action="{{ route('shorten') }}">
                     @csrf
                     <div class="row g-2">
@@ -82,6 +103,35 @@
                 </form>
             </div>
 
+            {{-- Claim --}}
+            @auth
+            <div class="tab-pane fade {{ $errors->has('short_code') ? 'show active' : '' }}" id="claim">
+                <form method="POST" action="{{ route('claim') }}">
+                    @csrf
+                    <div class="row g-2">
+                        <div class="col-lg-9">
+                            <input 
+                                type="text" 
+                                name="short_code"
+                                class="form-control @error('short_code') is-invalid @enderror"
+                                placeholder="Enter short code to claim"
+                                value="{{ old('short_code') }}">                           
+                                @error('short_code')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                        </div>
+
+                        <div class="col-lg-3">
+                            <button class="btn btn-primary w-100">
+                                <i class="fa-solid fa-key me-1"></i> Claim
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            @endauth
         </div>
     </div>
 

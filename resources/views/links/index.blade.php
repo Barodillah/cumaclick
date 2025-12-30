@@ -15,7 +15,7 @@
 
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-semibold mb-0">Links</h4>
+        <h4 class="fw-semibold mb-0">My Links</h4>
         <a href="/" class="btn btn-primary">
             <i class="fa-solid fa-plus me-1"></i> Create new
         </a>

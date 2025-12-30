@@ -110,6 +110,7 @@ class ShortlinkController extends Controller
             'short_code' => [
                 'required',
                 'string',
+                'min:4',
                 'max:50',
                 'alpha_dash',
                 function ($attr, $value, $fail) use ($link) {
@@ -135,6 +136,7 @@ class ShortlinkController extends Controller
             'short_code.required'   => 'Short code wajib diisi.',
             'short_code.alpha_dash' => 'Hanya boleh huruf, angka, dash (-) dan underscore (_).',
             'short_code.max'        => 'Maksimal 50 karakter.',
+            'short_code.min'        => 'Minimal 4 karakter.',
         ]);
 
         // Update
