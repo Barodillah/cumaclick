@@ -202,4 +202,52 @@ class WalletController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
+    public function enableAdFree()
+    {
+        $user = auth()->user();
+        $wallet = $user->wallet;
+
+        $price = 20;
+
+        if (!$wallet) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Wallet not found.'
+            ], 404);
+        }
+
+        if ($wallet->balance < $price) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Insufficient coin balance.'
+            ], 422);
+        }
+
+        DB::transaction(function () use ($wallet, $price, $user) {
+
+            // 1. Kurangi saldo
+            $wallet->decrement('balance', $price);
+
+            // 2. Catat transaksi
+            $wallet->transactions()->create([
+                'type' => 'debit',
+                'amount' => $price,
+                'source' => 'ad_free_feature',
+                'related_type' => 'users',
+                'related_id' => $user->id,
+                'description' => 'Enable Ad-Free Experience'
+            ]);
+
+            // 3. Aktifkan ads-free
+            $user->update([
+                'enabled_ads' => 1
+            ]);
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Ad-Free successfully enabled. Enjoy your experience!'
+        ]);
+    }
 }

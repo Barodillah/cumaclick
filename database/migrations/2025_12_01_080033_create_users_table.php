@@ -14,7 +14,8 @@ return new class extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['user', 'admin'])->default('user');
-            $table->boolean('enabled_ads')->default(false); 
+            $table->boolean('enabled_ads')->default(false);
+            $table->enum('tier', ['basic', 'premium', 'diamond'])->default('basic');
             $table->rememberToken();
             $table->timestamps();
         });

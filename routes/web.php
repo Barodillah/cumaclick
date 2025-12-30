@@ -50,6 +50,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/wallet/admin-adjust', [WalletController::class, 'adjustAdmin'])
         ->name('admin.wallet.admin.adjust');
 
+    Route::post('/wallet/enable-ad-free', [WalletController::class, 'enableAdFree'])
+    ->name('wallet.enableAdFree');
+
     Route::post('/claim', [LinkController::class, 'claim'])->name('claim');
 
     Route::post('/wallet/claim-register-bonus', 

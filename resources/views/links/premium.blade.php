@@ -15,9 +15,25 @@
                             {{ $balance }} Coins
                         </h1>
                     </div>
-                    <span class="badge bg-light text-dark px-3 py-2">
-                        Premium Account
-                    </span>
+
+                    @php
+                        if (auth()->user()->tier === 'basic') {
+                            $label = 'Basic Account';
+                            $class = 'bg-secondary';
+                        } elseif (auth()->user()->tier === 'premium') {
+                            $label = 'Premium Account';
+                            $class = 'bg-warning text-dark';
+                        } else {
+                            $label = 'Diamond Account';
+                            $class = 'bg-light text-dark';
+                        }
+                    @endphp
+
+                    <a href="#" id="upgradeTier" data-upgrade="premium">
+                        <span class="badge {{ $class }} px-3 py-2">
+                        {{ $label }}
+                        </span>
+                    </a>
                 </div>
             </div>
 
@@ -48,16 +64,20 @@
                     <p class="text-muted mb-3">
                         By enabling this option, you will not see ads when redirecting through your links.
                     </p>
-                    <a href="#" class="btn btn-warning w-100">
+                    <button
+                        id="enableAdFreeBtn"
+                        class="btn btn-warning w-100"
+                        data-price="20"
+                    >
                         <i class="fa-solid fa-coins me-1"></i> Enable Ad-Free for 20 Coins
-                    </a>
+                    </button>
                 </div>
             </div>
             @endif
         </div>
         <div class="col-lg-8">
             {{-- Purchase Card --}}
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body py-4">
 
                     <div class="text-center mb-2">
@@ -142,8 +162,8 @@
                             Wallet Transaction History
                         </h6>
 
-                        <span class="badge bg-primary">
-                            Balance: {{ number_format($balance) }} coin
+                        <span class="text-dark">
+                            Balance: <i class="fa-solid fa-coins me-1"></i>{{ number_format($balance) }} coin
                         </span>
                     </div>
 
@@ -247,6 +267,48 @@ document.getElementById('nominal').addEventListener('input', function () {
     const coins = Math.floor(nominal / rate);
 
     coinField.value = coins + ' Coins';
+});
+</script>
+
+<script>
+document.getElementById('enableAdFreeBtn').addEventListener('click', function () {
+    const price = this.dataset.price;
+
+    Swal.fire({
+        title: 'Enable Ad-Free?',
+        html: `This will deduct <b><i class="fa-solid fa-coins me-1"></i>${price} coins</b> from your wallet.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Enable',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#B45A71'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch("{{ route('wallet.enableAdFree') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed',
+                        text: data.message
+                    });
+                }
+            });
+        }
+    });
 });
 </script>
 @endsection
