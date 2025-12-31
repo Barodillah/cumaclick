@@ -29,11 +29,12 @@
                         }
                     @endphp
 
-                    <a href="#" id="upgradeTier" data-upgrade="premium">
+                    <a href="javascript:void(0)" id="upgradeTier">
                         <span class="badge {{ $class }} px-3 py-2">
-                        {{ $label }}
+                            {{ $label }}
                         </span>
                     </a>
+
                 </div>
             </div>
 
@@ -237,6 +238,88 @@
 
     </div>
 </div>
+
+<div class="modal fade" id="upgradeTierModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Upgrade Account</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="upgradeOptions"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.getElementById('upgradeTier').addEventListener('click', function () {
+    fetch('/tier/upgrade-options')
+        .then(res => res.json())
+        .then(res => {
+            let html = '';
+            res.data.forEach(item => {
+                html += `
+                    <div class="border rounded p-3 mb-2">
+                        <h6>${item.name}</h6>
+                        <p class="text-muted mb-2">${item.benefit}</p>
+                        <button class="btn btn-warning w-100"
+                            onclick="confirmUpgrade('${item.code}', ${item.price})">
+                            Upgrade - ${item.price} Coins
+                        </button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('upgradeOptions').innerHTML = html;
+            new bootstrap.Modal('#upgradeTierModal').show();
+        });
+});
+
+function confirmUpgrade(code, price) {
+    Swal.fire({
+        title: 'Confirm Upgrade?',
+        text: `This will cost ${price} coins`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Upgrade'
+    }).then(result => {
+        if (!result.isConfirmed) return;
+
+        fetch('/tier/upgrade', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code })
+        })
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) throw data;
+            return data;
+        })
+        .then(res => {
+            Swal.fire('Success', res.message, 'success')
+                .then(() => location.reload());
+        })
+        .catch(err => {
+            Swal.fire(
+                'Error',
+                err.message ?? 'Upgrade failed',
+                'error'
+            );
+        });
+    });
+}
+</script>
+
 <script>
 document.getElementById('nominal').addEventListener('input', function () {
 

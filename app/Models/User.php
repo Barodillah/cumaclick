@@ -67,4 +67,9 @@ class User extends Authenticatable
         return $this->hasMany(WalletTransaction::class);
     }
 
+    public function featureGrants()
+    {
+        return $this->hasMany(FeatureGrant::class);
+    }
+
 }

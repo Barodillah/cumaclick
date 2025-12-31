@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\User;
+use App\Models\Feature;
 use Illuminate\Support\Facades\DB;
 
 
@@ -250,4 +251,118 @@ class WalletController extends Controller
             'message' => 'Ad-Free successfully enabled. Enjoy your experience!'
         ]);
     }
+
+    public function pay(Request $request)
+    {
+        $user = auth()->user();
+        $wallet = $user->wallet;
+
+        $charges = $request->charges; 
+        // contoh:
+        // [
+        //   { key: "custom_3", label: "...", price: 10 },
+        //   { key: "require_otp", label: "...", price: 5 }
+        // ]
+
+        if (!$wallet) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Wallet not found'
+            ], 404);
+        }
+
+        $total = collect($charges)->sum('price');
+
+        if ($wallet->balance < $total) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Insufficient coin balance'
+            ], 422);
+        }
+
+        DB::transaction(function () use ($wallet, $charges, $user, $total) {
+
+            // 1. Kurangi saldo total
+            $wallet->decrement('balance', $total);
+
+            // 2. Catat transaksi PER FITUR
+            foreach ($charges as $item) {
+                $wallet->transactions()->create([
+                    'type' => 'debit',
+                    'amount' => $item['price'],
+                    'source' => 'feature_upgrade',
+                    'related_type' => 'features',
+                    'related_id' => null,
+                    'description' => 'Upgrade feature: ' . $item['label'],
+                    'meta' => json_encode([
+                        'feature' => $item['key']
+                    ])
+                ]);
+            }
+        });
+
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
+    public function upgrade(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|in:upgrade_premium,upgrade_diamond'
+        ]);
+
+        $user = auth()->user();
+        $wallet = $user->wallet;
+
+        $feature = Feature::where('code', $request->code)
+            ->with(['prices' => function ($q) use ($user) {
+                $q->where('tier', $user->tier);
+            }])
+            ->firstOrFail();
+
+        $priceRow = $feature->prices->first();
+
+        if (!$priceRow) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Price not configured for your tier.'
+            ], 422);
+        }
+
+        $price = $priceRow->price_coins;
+
+        if ($wallet->balance < $price) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Insufficient coin balance.'
+            ], 422);
+        }
+
+        DB::transaction(function () use ($wallet, $price, $user, $request, $feature) {
+
+            $wallet->decrement('balance', $price);
+
+            $wallet->transactions()->create([
+                'type' => 'debit',
+                'amount' => $price,
+                'source' => $request->code,
+                'related_type' => 'users',
+                'related_id' => $user->id,
+                'description' => $feature->name
+            ]);
+
+            $user->update([
+                'tier' => $request->code === 'upgrade_premium'
+                    ? 'premium'
+                    : 'diamond'
+            ]);
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Account upgraded successfully!'
+        ]);
+    }
+
 }

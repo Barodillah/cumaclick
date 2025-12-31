@@ -9,6 +9,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\FeatureController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -42,6 +43,36 @@ Route::get('/forgot/reset', [AuthController::class, 'resetPasswordForm'])->name(
 Route::post('/forgot/reset', [AuthController::class, 'resetPassword'])->name('forgot.reset.post');
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/tier/upgrade-options', [FeatureController::class, 'options']);
+    Route::post('/tier/upgrade', [WalletController::class, 'upgrade']);
+
+    // fitur admin
+    Route::get('/feature/prices/map', [FeatureController::class, 'priceMap'])
+    ->name('features.price-map');
+
+    // routes/web.php
+    Route::post('/features/pay', [WalletController::class, 'pay'])
+        ->name('features.pay');
+
+    Route::get('/admin/features', [FeatureController::class, 'index'])
+        ->name('admin.features.index');
+
+    Route::get('/admin', [FeatureController::class, 'admin'])
+        ->name('admin.index');
+
+    Route::post('/admin/features', [FeatureController::class, 'storeFeature'])
+        ->name('admin.features.store');
+
+    Route::post('/admin/features/{feature}/prices', [FeatureController::class, 'storePrice'])
+        ->name('admin.features.prices.store');
+
+    Route::post('/admin/discounts', [FeatureController::class, 'storeDiscount'])
+        ->name('admin.discounts.store');
+
+    Route::post('/admin/feature-grants', [FeatureController::class, 'storeGrant'])
+        ->name('admin.feature-grants.store');
+
     Route::get('/wallet', [WalletController::class, 'walletControl'])->name('admin.wallet.index');
 
     Route::post('/wallet/adjust', [WalletController::class, 'adjustUser'])

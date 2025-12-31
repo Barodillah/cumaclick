@@ -145,7 +145,7 @@ class RedirectController extends Controller
         }
 
         // jika menonaktifkan iklan
-        if (!$shortLink->enable_ads) {
+        if ($shortLink->enable_ads) {
             return view('redirect.basic', [
                 'target' => $shortLink->destination_type === 'file'
                     ? route('file.preview', $shortLink->short_code)

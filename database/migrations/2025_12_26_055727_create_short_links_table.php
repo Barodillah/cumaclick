@@ -34,6 +34,7 @@ return new class extends Migration {
             $table->boolean('is_active')->default(true);
             $table->boolean('one_time')->default(false);
             $table->timestamp('blocked_at')->nullable();
+            $table->boolean('enable_ads')->default(false);
 
             // Time control
             $table->timestamp('active_from')->nullable();

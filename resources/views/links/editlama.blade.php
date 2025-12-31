@@ -8,23 +8,7 @@
         <div class="alert alert-success">{{ session('msg') }}</div>
     @endif
 
-    @php
-    $initialFeatures = [
-        'short_code'   => strlen($link->short_code),
-        'custom_alias' => !empty($link->custom_alias),
-        'pin_code'     => !empty($link->pin_code),
-        'require_otp'  => (bool) $link->require_otp,
-        'enable_ads'   => (bool) $link->enable_ads,
-        'one_time'     => (bool) $link->one_time,
-    ];
-    @endphp
-
-    {{-- INITIAL FEATURE STATE --}}
-    <input type="hidden"
-       id="initial_features"
-       value='@json($initialFeatures)'>
-
-    <form id="editForm" method="POST" action="{{ route('links.update', $link->short_code) }}">
+    <form method="POST" action="{{ route('links.update', $link->short_code) }}">
         @csrf
         @method('PUT')
 
@@ -43,7 +27,7 @@
                         <span class="input-group-text" readonly>
                             {{ url('/') }}/
                         </span>
-                        <input name="short_code" id="short_code"
+                        <input name="short_code"
                                class="form-control @error('short_code') is-invalid @enderror"
                                value="{{ old('short_code', $link->short_code) }}">
                         @error('short_code')
@@ -55,7 +39,7 @@
                 {{-- CUSTOM ALIAS --}}
                 <div class="col-md-6">
                     <label class="form-label">Custom Alias</label>
-                    <input name="custom_alias" id="custom_alias"
+                    <input name="custom_alias"
                            class="form-control @error('custom_alias') is-invalid @enderror"
                            value="{{ old('custom_alias', $link->custom_alias) }}">
                     @error('custom_alias')
@@ -162,7 +146,7 @@
 
                 <div class="col-md-4">
                     <label class="form-label">PIN Code</label>
-                    <input name="pin_code" id="pin_code"
+                    <input name="pin_code"
                            class="form-control @error('pin_code') is-invalid @enderror"
                            value="{{ old('pin_code', $link->pin_code) }}">
                     @error('pin_code')
@@ -182,7 +166,7 @@
 
                 <div class="col-md-12 form-check">
                     <input type="checkbox" class="form-check-input"
-                           name="require_otp" id="require_otp"
+                           name="require_otp"
                            {{ old('require_otp', $link->require_otp) ? 'checked' : '' }}>
                     <label class="form-check-label">Require OTP</label>
                 </div>
@@ -234,7 +218,7 @@
                     </div>
 
                     <div class="form-check">
-                        <input type="checkbox" name="one_time" id="one_time"
+                        <input type="checkbox" name="one_time"
                                class="form-check-input"
                                {{ old('one_time', $link->one_time) ? 'checked' : '' }}>
                         <label class="form-check-label">One Time</label>
@@ -248,7 +232,7 @@
                     </div>
                     
                     <div class="form-check">
-                        <input type="checkbox" name="enable_ads" id="enable_ads"
+                        <input type="checkbox" name="enable_ads"
                                class="form-check-input"
                                {{ old('enable_ads', $link->enable_ads) ? 'checked' : '' }}>
                         <label class="form-check-label">Enable Ads</label>
@@ -281,113 +265,4 @@
         </button>
     </form>
 </div>
-<script>
-let FEATURE_PRICES = {};
-
-fetch("{{ route('features.price-map') }}")
-    .then(res => res.json())
-    .then(data => FEATURE_PRICES = data);
-</script>
-<script>
-document.getElementById('editForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const initial = JSON.parse(document.getElementById('initial_features').value);
-    const charges = [];
-
-    /* ===== SHORT CODE ===== */
-    const newLen = document.getElementById('short_code').value.length;
-    if (newLen <= 4 && newLen !== initial.short_code) {
-        const price = FEATURE_PRICES[`custom_${newLen}`] ?? 0;
-        if (price > 0) {
-            charges.push({
-                key: `custom_${newLen}`,
-                label: `Custom Short Code (${newLen} char)`,
-                price
-            });
-        }
-    }
-
-    /* ===== CUSTOM ALIAS ===== */
-    if (document.getElementById('custom_alias').value.trim() && !initial.custom_alias) {
-        const price = FEATURE_PRICES.custom_alias ?? 0;
-        if (price > 0) charges.push({
-            key: 'custom_alias',
-            label: 'Custom Alias',
-            price
-        });
-    }
-
-    /* ===== PIN CODE ===== */
-    if (document.getElementById('pin_code').value.trim() && !initial.pin_code) {
-        const price = FEATURE_PRICES.pin_code ?? 0;
-        if (price > 0) charges.push({
-            key: 'pin_code',
-            label: 'PIN Code',
-            price
-        });
-    }
-
-    /* ===== CHECKBOX ===== */
-    [
-        ['require_otp', 'Require OTP'],
-        ['enable_ads', 'Enable Ads'],
-        ['one_time', 'One Time Link'],
-    ].forEach(([key, label]) => {
-        if (!initial[key] && document.getElementById(key).checked) {
-            const price = FEATURE_PRICES[key] ?? 0;
-            if (price > 0) charges.push({ key, label, price });
-        }
-    });
-
-    /* ===== GRATIS ===== */
-    if (charges.length === 0) {
-        this.submit();
-        return;
-    }
-
-    /* ===== SUMMARY ===== */
-    let total = 0;
-    let html = '<ul class="text-start">';
-    charges.forEach(c => {
-        total += c.price;
-        html += `<li>${c.label} — <b>${c.price} coins</b></li>`;
-    });
-    html += `</ul><hr><h5>Total: <i class="fa-solid fa-coins me-1"></i>${total} coins</h5>`;
-
-    Swal.fire({
-        title: 'Confirm Feature Upgrade',
-        html,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Pay & Save',
-        confirmButtonColor: '#B45A71'
-    }).then(res => {
-        if (!res.isConfirmed) return;
-
-        fetch("{{ route('features.pay') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ charges })
-        })
-        .then(res => res.json())
-        .then(res => {
-            if (res.status === 'error') {
-                Swal.fire('Error', res.message, 'error');
-                return;
-            }
-
-            // PAYMENT OK → SUBMIT UPDATE LINK
-            document.getElementById('editForm').submit();
-        })
-        .catch(() => {
-            Swal.fire('Error', 'Payment failed', 'error');
-        });
-    });
-});
-</script>
-
 @endsection

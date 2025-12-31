@@ -21,6 +21,7 @@
     <meta property="og:title" content="Cuma Click - Lebih dari Sekedar Link">
     <meta property="og:description" content="Platform pemendek link yang kuat dengan analitik, proteksi PIN, hosting file, dan banyak lagi.">
     <meta property="og:image" content="https://cuma.click/favicon.png">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Twitter --}}
     <meta name="twitter:card" content="summary_large_image">

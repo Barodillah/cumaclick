@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container p-2">
-    <h4 class="mb-4 mt-2">Admin Wallet Adjustment (DEV / TEST)</h4>
+    <h4 class="mb-4 mt-2"><a href="{{ route('admin.index') }}"><i class="fa-solid fa-angle-left me-2"></i></a>Admin Wallet Adjustment (DEV / TEST)</h4>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -22,7 +22,7 @@
                 <option value="">-- pilih user --</option>
                 @foreach($users as $user)
                     <option value="{{ $user->id }}">
-                        {{ $user->name }} ({{ $user->coin_balance }} coin)
+                        {{ $user->email }} ({{ $user->wallet->balance }} coin)
                     </option>
                 @endforeach
             </select>
