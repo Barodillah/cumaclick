@@ -23,6 +23,7 @@ class TopupController extends Controller
             'user_id' => auth()->id(),
             'order_id' => $orderId,
             'gross_amount' => $request->nominal,
+            'coins' => $request->coins,
             'transaction_status' => 'pending',
         ]);
 

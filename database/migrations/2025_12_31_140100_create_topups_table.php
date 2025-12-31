@@ -20,7 +20,7 @@ return new class extends Migration {
 
             // Nominal
             $table->integer('gross_amount'); // nilai topup (rupiah)
-
+            $table->integer('coins');
             // Status transaksi Midtrans
             $table->string('transaction_status')->nullable();
             $table->string('fraud_status')->nullable();

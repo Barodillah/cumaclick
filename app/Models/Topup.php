@@ -12,6 +12,7 @@ class Topup extends Model
         'transaction_id',
         'payment_type',
         'gross_amount',
+        'coins',
         'transaction_status',
         'fraud_status',
         'transaction_time',

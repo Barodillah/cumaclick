@@ -346,7 +346,23 @@ document.querySelector('.btn.btn-warning.w-100.mb-4')
             return;
         }
 
-        const coins = Math.floor(nominal / 500); // contoh rate
+        const MIN = 5000;
+        const MAX = 50000;
+
+        const RATE_MIN = 500; // 10K → 20
+        const RATE_MAX = 833; // 50K → 60
+
+        // Clamp nominal supaya tidak lebih dari MAX
+        const effectiveNominal = Math.min(nominal, MAX);
+
+        // Hitung progress (0 - 1)
+        const progress = (effectiveNominal - MIN) / (MAX - MIN);
+
+        // Hitung rate (semakin besar nominal → semakin murah)
+        const rate = RATE_MIN + (RATE_MAX - RATE_MIN) * progress;
+
+        // Hitung coins
+        const coins = Math.floor(nominal / rate); // contoh rate
         openConfirmModal(nominal, coins);
     });
 
