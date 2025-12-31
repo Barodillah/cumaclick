@@ -42,7 +42,8 @@
         <!-- //top links -->
         <div class="col-12 mt-4">
             <h4 class="mb-2 fw-semibold">Top 5 Links</h4>
-            <table class="table table-striped">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle">
                 <thead>
                     <tr>
                         <th>Short URL</th>
@@ -61,7 +62,8 @@
                     </tr>
                     @endforeach
                 </tbody>
-            </table>
+                </table>
+            </div>
             </div>
         </div>
     </div>

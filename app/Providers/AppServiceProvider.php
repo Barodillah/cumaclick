@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use Midtrans\Config;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,5 +30,10 @@ class AppServiceProvider extends ServiceProvider
                 );
             }
         });
+
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = config('midtrans.is_sanitized');
+        Config::$is3ds = config('midtrans.is_3ds');
     }
 }

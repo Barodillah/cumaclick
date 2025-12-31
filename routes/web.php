@@ -10,6 +10,7 @@ use App\Http\Controllers\LinkController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\TopupController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -43,6 +44,7 @@ Route::get('/forgot/reset', [AuthController::class, 'resetPasswordForm'])->name(
 Route::post('/forgot/reset', [AuthController::class, 'resetPassword'])->name('forgot.reset.post');
 
 Route::middleware(['auth'])->group(function () {
+    Route::post('/topup', [TopupController::class, 'store']);
 
     Route::get('/tier/upgrade-options', [FeatureController::class, 'options']);
     Route::post('/tier/upgrade', [WalletController::class, 'upgrade']);

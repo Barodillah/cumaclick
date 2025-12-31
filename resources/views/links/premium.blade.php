@@ -39,6 +39,7 @@
             </div>
 
             {{-- Info Card --}}
+            @if(auth()->user()->role != 'admin')
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="fw-semibold mb-3">Premium Features</h5>
@@ -118,7 +119,11 @@
                             <div class="border rounded p-3 h-100">
                                 <h6 class="fw-semibold">20 Coins</h6>
                                 <p class="text-muted small mb-3">Perfect for starters</p>
-                                <a href="#" class="btn btn-warning w-100">
+                                <a href="#" class="btn btn-warning w-100"
+                                data-instant
+                                data-nominal="10000"
+                                data-coins="20"
+                                >
                                     10K IDR
                                 </a>
                             </div>
@@ -131,7 +136,11 @@
                                 </span>
                                 <h6 class="fw-semibold mt-2">45 Coins</h6>
                                 <p class="text-muted small mb-3">Best value</p>
-                                <a href="#" class="btn btn-warning w-100">
+                                <a href="#" class="btn btn-warning w-100"
+                                data-instant
+                                data-nominal="30000"
+                                data-coins="45"
+                                >
                                     30K IDR
                                 </a>
                             </div>
@@ -141,7 +150,11 @@
                             <div class="border rounded p-3 h-100">
                                 <h6 class="fw-semibold">60 Coins</h6>
                                 <p class="text-muted small mb-3">For power users</p>
-                                <a href="#" class="btn btn-warning w-100">
+                                <a href="#" class="btn btn-warning w-100"
+                                data-instant
+                                data-nominal="50000"
+                                data-coins="60"
+                                >
                                     50K IDR
                                 </a>
                             </div>
@@ -150,7 +163,7 @@
 
                 </div>
             </div>
-
+            @endif
         </div>
 
         <div class="col-lg-12"> 
@@ -256,6 +269,116 @@
     </div>
 </div>
 
+<!-- Confirm Topup Modal -->
+<div class="modal fade" id="confirmTopupModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    Confirm Top Up
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td class="text-muted">Name</td>
+                        <td class="fw-semibold" id="confirmName"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Email</td>
+                        <td class="fw-semibold" id="confirmEmail"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Nominal</td>
+                        <td class="fw-semibold"><span id="confirmNominal" class="badge bg-warning text-dark"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Coins</td>
+                        <td class="fw-semibold" id="confirmCoins"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button class="btn btn-warning" id="confirmPayBtn">
+                    Proceed Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script 
+    src="https://app.sandbox.midtrans.com/snap/snap.js"
+    data-client-key="{{ config('midtrans.client_key') }}">
+</script>
+
+<script>
+let selectedNominal = 0;
+let selectedCoins = 0;
+
+const userName = @json(auth()->user()->name);
+const userEmail = @json(auth()->user()->email);
+
+function openConfirmModal(nominal, coins) {
+    selectedNominal = nominal;
+    selectedCoins = coins;
+
+    document.getElementById('confirmName').innerText = userName;
+    document.getElementById('confirmEmail').innerText = userEmail;
+    document.getElementById('confirmNominal').innerText = nominal.toLocaleString('id-ID');
+    document.getElementById('confirmCoins').innerText = coins;
+
+    new bootstrap.Modal(document.getElementById('confirmTopupModal')).show();
+}
+
+/* Manual Buy */
+document.querySelector('.btn.btn-warning.w-100.mb-4')
+    .addEventListener('click', function () {
+        const nominal = parseInt(document.getElementById('nominal').value);
+        if (!nominal || nominal < 5000) {
+            alert('Minimal top up 5.000');
+            return;
+        }
+
+        const coins = Math.floor(nominal / 500); // contoh rate
+        openConfirmModal(nominal, coins);
+    });
+
+/* Instant Buy */
+document.querySelectorAll('[data-instant]').forEach(btn => {
+    btn.addEventListener('click', function () {
+        openConfirmModal(
+            parseInt(this.dataset.nominal),
+            parseInt(this.dataset.coins)
+        );
+    });
+});
+</script>
+<script>
+document.getElementById('confirmPayBtn').addEventListener('click', function () {
+    fetch('/topup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+        },
+        body: JSON.stringify({
+            nominal: selectedNominal,
+            coins: selectedCoins
+        })
+    })
+    .then(res => res.json())
+    .then(res => {
+        snap.pay(res.snap_token);
+    });
+});
+</script>
 
 <script>
 document.getElementById('upgradeTier').addEventListener('click', function () {
