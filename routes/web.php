@@ -46,6 +46,8 @@ Route::post('/forgot/reset', [AuthController::class, 'resetPassword'])->name('fo
 Route::middleware(['auth'])->group(function () {
     Route::post('/topup', [TopupController::class, 'store']);
 
+    Route::post('/topup-success', [TopupController::class, 'topupSuccess'])->name('topup.success');
+
     Route::get('/tier/upgrade-options', [FeatureController::class, 'options']);
     Route::post('/tier/upgrade', [WalletController::class, 'upgrade']);
 

@@ -57,10 +57,43 @@
                     <label class="form-label">Custom Alias</label>
                     <input name="custom_alias" id="custom_alias"
                            class="form-control @error('custom_alias') is-invalid @enderror"
-                           value="{{ old('custom_alias', $link->custom_alias) }}">
+                           value="{{ old('custom_alias', $link->custom_alias) }}"
+                           placeholder="Minimal 6 karakter, huruf atau angka">
                     @error('custom_alias')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+                <div class="col-12">
+                    <div class="card p-3">
+                        <h5 class="fw-bold mb-3">Spen Coins for Short Code & Custom Alias</h5>
+                        <div class="row g-3">
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded p-2 text-center">
+                                    <div class="fw-bold">4 Karakter</div>
+                                    <div><i class="fa-solid fa-coins me-1"></i> {{ featurePrice('custom_4', auth()->user()->tier) }} coins</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded p-2 text-center">
+                                    <div class="fw-bold">3 Karakter</div>
+                                    <div><i class="fa-solid fa-coins me-1"></i> {{ featurePrice('custom_3', auth()->user()->tier) }} coins</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded p-2 text-center">
+                                    <div class="fw-bold">2 Karakter</div>
+                                    <div><i class="fa-solid fa-coins me-1"></i> {{ featurePrice('custom_2', auth()->user()->tier) }} coins</div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded p-2 text-center">
+                                    <div class="fw-bold">1 Karakter</div>
+                                    <div><i class="fa-solid fa-coins me-1"></i> {{ featurePrice('custom_1', auth()->user()->tier) }} coins</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- DESTINATION URL (ONLY IF TYPE = URL) --}}
@@ -161,18 +194,34 @@
             <div class="card-body row g-3">
 
                 <div class="col-md-4">
-                    <label class="form-label">PIN Code</label>
+                    <label class="form-label">PIN Code ( <i class="fa-solid fa-coins me-1"></i> {{ featurePrice('pin_code', auth()->user()->tier) }} coins )</label>
                     <input name="pin_code" id="pin_code"
-                           class="form-control @error('pin_code') is-invalid @enderror"
-                           value="{{ old('pin_code', $link->pin_code) }}">
+                        class="form-control @error('pin_code') is-invalid @enderror"
+                        value="{{ old('pin_code', $link->pin_code) }}"
+                        maxlength="4"
+                        placeholder="Harus 4 angka"
+                        oninput="validatePinCode(this)">
                     @error('pin_code')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+
+                    <script>
+                    function validatePinCode(input) {
+                        // Hapus semua karakter selain angka
+                        input.value = input.value.replace(/\D/g, '');
+                        
+                        // Batasi panjang maksimal 4 digit
+                        if (input.value.length > 4) {
+                            input.value = input.value.slice(0, 4);
+                        }
+                    }
+                    </script>
                 </div>
 
                 <div class="col-md-8">
                     <label class="form-label">Password Hint</label>
                     <input name="password_hint"
+                            placeholder="Petunjuk singkat PIN"
                            class="form-control @error('password_hint') is-invalid @enderror"
                            value="{{ old('password_hint', $link->password_hint) }}">
                     @error('password_hint')
@@ -180,12 +229,23 @@
                     @enderror
                 </div>
 
-                <div class="col-md-12 form-check">
-                    <input type="checkbox" class="form-check-input"
-                           name="require_otp" id="require_otp"
-                           {{ old('require_otp', $link->require_otp) ? 'checked' : '' }}>
-                    <label class="form-check-label">Require OTP</label>
+                <div class="col-md-12">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input"
+                            type="checkbox"
+                            name="require_otp"
+                            id="require_otp"
+                            {{ old('require_otp', $link->require_otp) ? 'checked' : '' }}>
+                        <label class="form-check-label fw-semibold" for="require_otp">
+                            Require OTP
+                            <span class="text-muted ms-1">
+                                ( <i class="fa-solid fa-coins me-1"></i>
+                                {{ featurePrice('require_otp', auth()->user()->tier) }} coins )
+                            </span>
+                        </label>
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -197,6 +257,7 @@
                 <div class="col-md-4">
                     <label>Max Click</label>
                     <input type="number" name="max_click"
+                            placeholder="Setting maximal click"
                            class="form-control @error('max_click') is-invalid @enderror"
                            value="{{ old('max_click', $link->max_click) }}">
                     @error('max_click')
@@ -225,35 +286,72 @@
                            value="{{ optional($link->expired_at)->format('Y-m-d\TH:i') }}">
                 </div>
 
-                <div class="col-md-12 d-flex gap-3">
-                    <div class="form-check">
-                        <input type="checkbox" name="is_active"
-                               class="form-check-input"
-                               {{ old('is_active', $link->is_active) ? 'checked' : '' }}>
-                        <label class="form-check-label">Active</label>
-                    </div>
+                <div class="col-md-12">
+                    <div class="row g-3">
 
-                    <div class="form-check">
-                        <input type="checkbox" name="one_time" id="one_time"
-                               class="form-check-input"
-                               {{ old('one_time', $link->one_time) ? 'checked' : '' }}>
-                        <label class="form-check-label">One Time</label>
-                    </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="is_active"
+                                    id="is_active"
+                                    {{ old('is_active', $link->is_active) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold" for="is_active">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
 
-                    <div class="form-check">
-                        <input type="checkbox" name="enable_preview"
-                               class="form-check-input"
-                               {{ old('enable_preview', $link->enable_preview) ? 'checked' : '' }}>
-                        <label class="form-check-label">Enable Preview</label>
-                    </div>
-                    
-                    <div class="form-check">
-                        <input type="checkbox" name="enable_ads" id="enable_ads"
-                               class="form-check-input"
-                               {{ old('enable_ads', $link->enable_ads) ? 'checked' : '' }}>
-                        <label class="form-check-label">Enable Ads</label>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="one_time"
+                                    id="one_time"
+                                    {{ old('one_time', $link->one_time) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold" for="one_time">
+                                    One Time
+                                    <span class="text-muted ms-1">
+                                        ( <i class="fa-solid fa-coins me-1"></i>
+                                        {{ featurePrice('one_time', auth()->user()->tier) }} coins )
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="enable_preview"
+                                    id="enable_preview"
+                                    {{ old('enable_preview', $link->enable_preview) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold" for="enable_preview">
+                                    Enable Preview
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-lg-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="enable_ads"
+                                    id="enable_ads"
+                                    {{ old('enable_ads', $link->enable_ads) ? 'checked' : '' }}>
+                                <label class="form-check-label fw-semibold" for="enable_ads">
+                                    Disable Ads
+                                    <span class="text-muted ms-1">
+                                        ( <i class="fa-solid fa-coins me-1"></i>
+                                        {{ featurePrice('enable_ads', auth()->user()->tier) }} coins )
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
             </div>
         </div>
 

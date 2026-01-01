@@ -20,7 +20,7 @@
             padding: 30px;
         }
         h2 {
-            color: #4CAF50;
+            color: #C86B82;
             margin-bottom: 20px;
             font-size: 24px;
         }
@@ -30,13 +30,13 @@
         }
         .highlight {
             font-weight: bold;
-            color: #4CAF50;
+            color: #C86B82;
         }
         .btn {
             display: inline-block;
             margin-top: 25px;
             padding: 12px 24px;
-            background-color: #4CAF50;
+            background-color: #C86B82;
             color: #ffffff;
             text-decoration: none;
             border-radius: 6px;
@@ -44,7 +44,7 @@
             transition: background-color 0.3s;
         }
         .btn:hover {
-            background-color: #43a047;
+            background-color: #C86B82;
         }
         .footer {
             margin-top: 30px;
@@ -60,7 +60,7 @@
         <p>Halo <span class="highlight">{{ $topup->user->name }}</span>,</p>
         <p>Koin Anda bertambah <span class="highlight">{{ $topup->coins }}</span> setelah topup dengan Order ID: <span class="highlight">{{ $topup->order_id }}</span>.</p>
         <p>Terima kasih telah melakukan topup di Cuma.Click. Anda dapat menggunakan koin ini untuk menikmati semua fitur premium yang tersedia.</p>
-        <a href="{{ route('links.premium') }}" class="btn">Gunakan Koin Sekarang</a>
+        <!-- <a href="{{ route('links.premium') }}" class="btn">Gunakan Koin Sekarang</a> -->
         <div class="footer">
             &copy; {{ date('Y') }} Cuma.Click Semua hak dilindungi.
         </div>

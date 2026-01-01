@@ -7,7 +7,8 @@ use App\Models\{
     FeaturePrice,
     Discount,
     FeatureGrant,
-    User
+    User,
+    Topup
 };
 use Illuminate\Http\Request;
 
@@ -39,12 +40,12 @@ class FeatureController extends Controller
         $this->authorizeAdmin();
 
         return view('admin.index', [
-            'totalUsers'   => \App\Models\User::count(),
-            'activeUsers' => \App\Models\User::whereNotNull('email_verified_at')->count(),
-            'totalRevenue' => \App\Models\WalletTransaction::where('type', 'credit')
-                ->where('source', '!=', 'admin_stabilizer')
-                ->sum('amount'),
-            'users'        => \App\Models\User::latest()->paginate(10),
+            'totalUsers'    => \App\Models\User::count(),
+            'activeUsers'   => \App\Models\User::whereNotNull('email_verified_at')->count(),
+            'totalRevenue'  => \App\Models\Topup::where('transaction_status', 'success')
+                                    ->sum('gross_amount'),
+            'users'         => \App\Models\User::latest()->paginate(10),
+            'topups'        => \App\Models\Topup::with('user')->latest()->paginate(10), // ambil data topup terbaru
         ]);
     }
 
@@ -180,14 +181,12 @@ class FeatureController extends Controller
         // Hardcode benefit
         $benefits = [
             'upgrade_premium' => [
-                'Ad-free experience',
-                'Higher redirect limit',
-                'Priority support',
+                'Discount fitur 50%',
             ],
             'upgrade_diamond' => [
                 'All Premium benefits',
-                'Unlimited redirects',
-                'Advanced analytics',
+                'Pasti bebas iklan',
+                'Discount 85% feature dan sebagian gratis',
                 'Highest priority support',
             ],
         ];

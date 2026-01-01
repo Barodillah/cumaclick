@@ -50,6 +50,11 @@
                     <button class="btn btn-outline-secondary btn-sm" id="copyBtn">
                         <i class="fa-solid fa-copy me-2"></i> Copy link
                     </button>
+                    @auth
+                    <a href="links/{{ session('short_result')['code'] ?? '' }}/edit" class="btn btn-outline-secondary btn-sm ms-1">
+                        <i class="fa-solid fa-gear me-2"></i> Other setting
+                    </a>
+                    @endauth
                 </div>
             </div>
         </div>

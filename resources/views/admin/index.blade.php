@@ -153,5 +153,53 @@
         @endif
     </div>
 
+    <div class="card mt-4">
+        <div class="card-header fw-bold">
+            Topup Terbaru
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light small text-uppercase">
+                    <tr>
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Coins</th>
+                        <th>Nominal</th>
+                        <th>Metode</th>
+                        <th>Status</th>
+                        <th>Tanggal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($topups as $topup)
+                        <tr>
+                            <td>{{ $loop->iteration + ($topups->currentPage() - 1) * $topups->perPage() }}</td>
+                            <td>{{ $topup->user->name ?? '-' }}</td>
+                            <td>{{ number_format($topup->coins, 0, ',', '.') }}</td>
+                            <td>{{ number_format($topup->gross_amount, 0, ',', '.') }}</td>
+                            <td>{{ $topup->payment_type ?? '-' }}</td>
+                            <td>
+                                <span class="badge 
+                                    @if($topup->transaction_status === 'success') bg-success
+                                    @elseif($topup->transaction_status === 'pending') bg-warning
+                                    @else bg-danger @endif">
+                                    {{ ucfirst($topup->transaction_status) }}
+                                </span>
+                            </td>
+                            <td>{{ $topup->created_at->format('d M Y H:i') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Belum ada topup</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            <div class="mt-2">
+                {{ $topups->links() }}
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection

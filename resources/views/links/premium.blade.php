@@ -274,9 +274,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold">
-                    Confirm Top Up
-                </h5>
+                <h5 class="modal-title fw-bold">Confirm Top Up</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
@@ -299,15 +297,20 @@
                         <td class="fw-semibold" id="confirmCoins"></td>
                     </tr>
                 </table>
+
+                <div class="mb-3">
+                    <label for="topupAddress" class="form-label">Alamat</label>
+                    <input type="text" class="form-control" id="topupAddress" placeholder="Masukkan alamat">
+                </div>
+                <div class="mb-3">
+                    <label for="topupPhone" class="form-label">Telepon</label>
+                    <input type="text" class="form-control" id="topupPhone" placeholder="Masukkan nomor telepon">
+                </div>
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-light" data-bs-dismiss="modal">
-                    Cancel
-                </button>
-                <button class="btn btn-warning" id="confirmPayBtn">
-                    Proceed Payment
-                </button>
+                <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-warning" id="confirmPayBtn">Proceed Payment</button>
             </div>
         </div>
     </div>
@@ -378,6 +381,14 @@ document.querySelectorAll('[data-instant]').forEach(btn => {
 </script>
 <script>
 document.getElementById('confirmPayBtn').addEventListener('click', function () {
+    const address = document.getElementById('topupAddress').value.trim();
+    const phone = document.getElementById('topupPhone').value.trim();
+
+    if (!address || !phone) {
+        alert('Alamat dan telepon wajib diisi!');
+        return;
+    }
+
     fetch('/topup', {
         method: 'POST',
         headers: {
@@ -386,12 +397,53 @@ document.getElementById('confirmPayBtn').addEventListener('click', function () {
         },
         body: JSON.stringify({
             nominal: selectedNominal,
-            coins: selectedCoins
+            coins: selectedCoins,
+            address: address,
+            phone: phone
         })
     })
     .then(res => res.json())
     .then(res => {
-        snap.pay(res.snap_token);
+        snap.pay(res.snap_token, {
+            onSuccess: function(result){
+                // Payment sukses, redirect ke page.topup-success
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("topup.success") }}';
+
+                const token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '_token';
+                token.value = document.querySelector('meta[name=csrf-token]').content;
+                form.appendChild(token);
+
+                const coinsInput = document.createElement('input');
+                coinsInput.type = 'hidden';
+                coinsInput.name = 'coins';
+                coinsInput.value = selectedCoins;
+                form.appendChild(coinsInput);
+
+                const redirectInput = document.createElement('input');
+                redirectInput.type = 'hidden';
+                redirectInput.name = 'redirectUrl';
+                redirectInput.value = '/premium';
+                form.appendChild(redirectInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            },
+            onPending: function(result){
+                alert("Menunggu pembayaran..."); 
+                console.log(result);
+            },
+            onError: function(result){
+                alert("Pembayaran gagal!"); 
+                console.log(result);
+            },
+            onClose: function(){
+                alert('Anda menutup popup pembayaran tanpa menyelesaikan.');
+            }
+        });
     });
 });
 </script>

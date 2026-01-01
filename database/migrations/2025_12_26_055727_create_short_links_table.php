@@ -17,8 +17,8 @@ return new class extends Migration {
                   ->nullOnDelete();
 
             // Core
-            $table->string('short_code')->unique();
-            $table->string('custom_alias')->nullable()->unique();
+            $table->string('short_code')->unique()->collation('utf8mb4_bin')->change();
+            $table->string('custom_alias')->nullable()->unique()->collation('utf8mb4_bin')->change();
 
             // Destination
             $table->enum('destination_type', ['url', 'file'])->default('url');

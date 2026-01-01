@@ -22,8 +22,8 @@ class RedirectController extends Controller
         $ads = Http::withoutVerifying()->get('https://cuma.click/ads/api.php')->json();
 
         // 1. Cari berdasarkan short_code atau custom_alias
-        $shortLink = ShortLink::where('short_code', $code)
-            ->orWhere('custom_alias', $code)
+        $shortLink = ShortLink::whereRaw('BINARY short_code = ?', [$code])
+            ->orWhereRaw('BINARY custom_alias = ?', [$code])
             ->first();
 
         if (!$shortLink) {

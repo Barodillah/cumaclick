@@ -7,6 +7,18 @@ use App\Models\ShortLink;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Feature;
+
+if (!function_exists('featurePrice')) {
+    function featurePrice($code, $tier)
+    {
+        $feature = Feature::where('code', $code)->first();
+        if (!$feature) return 0;
+
+        $price = $feature->prices()->where('tier', $tier)->first();
+        return $price ? $price->price_coins : 0;
+    }
+}
 
 class LinkController extends Controller
 {
@@ -148,6 +160,7 @@ class LinkController extends Controller
                             'custom_alias' => [
                                 'nullable',
                                 'string',
+                                'min:6',
                                 'max:50',
                                 function ($attr, $value, $fail) use ($link) {
                                     if (!$value) return;

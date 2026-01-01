@@ -67,6 +67,8 @@ class MidtransController extends Controller
 
         // Simpan info tambahan Midtrans
         $topup->transaction_id = $notification->transaction_id ?? null;
+        $topup->transaction_time = $notification->transaction_time ?? null;
+        $topup->settlement_time = $notification->settlement_time ?? null;
         $topup->payment_type   = $type;
         $topup->fraud_status   = $fraud;
         $topup->payload        = $notification;
