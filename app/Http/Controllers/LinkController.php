@@ -8,6 +8,8 @@ use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Feature;
+use App\Models\OneTimeLink;
+use Illuminate\Support\Str;
 
 if (!function_exists('featurePrice')) {
     function featurePrice($code, $tier)
@@ -333,7 +335,8 @@ class LinkController extends Controller
                     $q->select(\DB::raw('COUNT(DISTINCT ip_address)'));
                 }
             ])
-            ->orderByDesc('unique_click_count')
+            ->orderByDesc('unique_click_count') // prioritas 1
+            ->orderByDesc('click_count')        // prioritas 2
             ->limit(5)
             ->get();
 
@@ -397,5 +400,37 @@ class LinkController extends Controller
             'transactions' => $transactions,
             'isAdmin' => $user->role === 'admin',
         ]);
+    }
+
+    public function activate($id)
+    {
+        $link = ShortLink::findOrFail($id);
+
+        $raw = now()->timestamp . '|' . Str::random(64);
+        $hash = hash('sha256', $raw);
+
+        OneTimeLink::updateOrCreate(
+            ['short_link_id' => $link->id],
+            [
+                'token_hash'   => $hash,
+                'activated_at' => now(),
+                'used_at'      => null,
+                'used_ip'      => null,
+                'used_ua'      => null,
+            ]
+        );
+
+        return redirect()->back()
+            ->with('success', 'One-Time Link berhasil diaktifkan.');
+    }
+
+    public function deactivate($id)
+    {
+        $link = ShortLink::findOrFail($id);
+
+        $link->oneTimeLink()?->delete();
+
+        return redirect()->back()
+            ->with('success', 'One-Time Link berhasil dinonaktifkan.');
     }
 }

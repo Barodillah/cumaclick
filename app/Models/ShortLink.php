@@ -94,4 +94,9 @@ class ShortLink extends Model
         return $this->hasMany(Tag::class);
     }
 
+    public function oneTimeLink()
+    {
+        return $this->hasOne(OneTimeLink::class);
+    }
+
 }

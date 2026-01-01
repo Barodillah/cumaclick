@@ -488,4 +488,17 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
 });
 </script>
 
+@if(session('msg'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('msg') }}',
+        timer: 2000,
+        showConfirmButton: false
+    });
+</script>
+@endif
+
+
 @endsection

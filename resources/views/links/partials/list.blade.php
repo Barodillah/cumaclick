@@ -170,15 +170,32 @@
                     </span>
                     @endif
 
-                    @if($link->max_click != null or $link->one_time != 0)
+                    @if($link->max_click != null)
                     <span>
                         <i class="fa-solid fa-arrow-pointer me-1"></i>
                         @if($link->max_click != null)
                             Max {{ $link->max_click }}
-                        @elseif($link->one_time != 0)
-                            One-time
                         @endif
                     </span>
+                    @endif
+
+                    @if($link->one_time != 0)
+                        @php
+                            $otl = $link->oneTimeLink;
+                            $isActive = $otl && is_null($otl->used_at);
+                        @endphp
+
+                        <div class="form-check form-switch">
+                            <input class="form-check-input"
+                                type="checkbox"
+                                id="oneTimeToggle-{{ $link->id }}"
+                                {{ $isActive ? 'checked' : '' }}
+                                onchange="handleOneTimeToggle(this, {{ $link->id }})">
+
+                            <label class="form-check-label" for="oneTimeToggle-{{ $link->id }}">
+                                One-Time
+                            </label>
+                        </div>
                     @endif
 
                     @if($link->expired_at != null
@@ -316,3 +333,52 @@ document.addEventListener('submit', function (e) {
     });
 });
 </script>
+
+<script>
+function handleOneTimeToggle(el, linkId) {
+    if (el.checked) {
+        // AKTIFKAN
+        Swal.fire({
+            title: 'Aktifkan One-Time Link?',
+            text: 'Link hanya bisa dibuka SATU KALI setelah diaktifkan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Aktifkan',
+            cancelButtonText: 'Batal',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/links/${linkId}/one-time/activate`;
+            } else {
+                el.checked = false;
+            }
+        });
+    } else {
+        // MATIKAN
+        Swal.fire({
+            title: 'Nonaktifkan One-Time Link?',
+            text: 'Token akan dihapus dan link kembali normal.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Nonaktifkan',
+            cancelButtonText: 'Batal',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/links/${linkId}/one-time/deactivate`;
+            } else {
+                el.checked = true;
+            }
+        });
+    }
+}
+</script>
+<!-- @if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+    });
+</script>
+@endif -->

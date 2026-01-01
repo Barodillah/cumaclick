@@ -35,7 +35,66 @@
 
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if(!$short->one_time && !$short->enable_ads)
     <script src="https://pl28358542.effectivegatecpm.com/a0/f0/8f/a0f08f09d88c14cee42b6b4266bad37a.js"></script>
+    @endif
+    <style>
+        .ads-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .ads-modal.hidden {
+            display: none;
+        }
+
+        .ads-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            position: relative;
+            max-width: 340px;
+        }
+
+        .ads-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+
+            background: #B45A71;
+            color: #fff;
+            border: none;
+
+            width: 32px;
+            aspect-ratio: 1 / 1; /* KUNCI BULAT */
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+            line-height: 1; /* PENTING */
+            padding: 0;
+
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 480px) {
+            .ads-close {
+                width: 36px;
+                font-size: 22px;
+            }
+        }
+
+    </style>
+    @stack('styles')
 </head>
 <body>
 

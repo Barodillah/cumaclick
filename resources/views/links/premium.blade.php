@@ -31,6 +31,9 @@
 
                     <a href="javascript:void(0)" id="upgradeTier">
                         <span class="badge {{ $class }} px-3 py-2">
+                            @if(auth()->user()->tier === 'diamond')
+                            <i class="fa-regular fa-gem"></i>
+                            @endif
                             {{ $label }}
                         </span>
                     </a>
@@ -263,6 +266,11 @@
 
             <div class="modal-body">
                 <div id="upgradeOptions"></div>
+                @if(auth()->user()->tier === 'diamond')
+                <div class="alert alert-info text-center">
+                    <i class="fa-regular fa-gem me-1"></i>Anda sudah tier tertinggi
+                </div>
+                @endif
             </div>
 
         </div>

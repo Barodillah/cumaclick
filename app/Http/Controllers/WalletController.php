@@ -355,7 +355,8 @@ class WalletController extends Controller
             $user->update([
                 'tier' => $request->code === 'upgrade_premium'
                     ? 'premium'
-                    : 'diamond'
+                    : 'diamond',
+                'enabled_ads' => $request->code === 'upgrade_diamond' ? 1 : $user->enabled_ads
             ]);
         });
 

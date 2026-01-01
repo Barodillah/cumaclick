@@ -137,6 +137,7 @@
         }
 
     </style>
+    @stack('styles')
 </head>
 <body>
 
@@ -201,6 +202,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 @include('partials.modal-result')
 @include('partials.scripts')
+@if(session('success'))
+
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: '{{ session('success') }}',
+        timer: 2000,
+        showConfirmButton: false
+    });
+</script>
+@endif
 
 </body>
 </html>

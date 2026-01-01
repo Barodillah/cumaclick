@@ -44,6 +44,15 @@ Route::get('/forgot/reset', [AuthController::class, 'resetPasswordForm'])->name(
 Route::post('/forgot/reset', [AuthController::class, 'resetPassword'])->name('forgot.reset.post');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/files', [FileController::class, 'index'])
+    ->name('files.index');
+
+    Route::get('/links/{id}/one-time/activate', [LinkController::class, 'activate'])
+    ->name('links.one-time.activate');
+
+    Route::get('/links/{id}/one-time/deactivate', [LinkController::class, 'deactivate'])
+        ->name('links.one-time.deactivate');
+
     Route::post('/topup', [TopupController::class, 'store']);
 
     Route::post('/topup-success', [TopupController::class, 'topupSuccess'])->name('topup.success');

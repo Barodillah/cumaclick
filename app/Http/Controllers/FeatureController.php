@@ -182,10 +182,12 @@ class FeatureController extends Controller
         $benefits = [
             'upgrade_premium' => [
                 'Discount fitur 50%',
+                'Up to 30MB upload file',
             ],
             'upgrade_diamond' => [
                 'All Premium benefits',
                 'Pasti bebas iklan',
+                'Up to 100MB upload file',
                 'Discount 85% feature dan sebagian gratis',
                 'Highest priority support',
             ],

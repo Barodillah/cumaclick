@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Otp;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
+use App\Models\OneTimeLink;
+use Illuminate\Support\Facades\DB;
 
 
 class RedirectController extends Controller
@@ -89,8 +91,54 @@ class RedirectController extends Controller
         }
 
         // 8. One time link
-        if ($shortLink->one_time && $shortLink->click_count > 0) {
-            return view('redirect.expired');
+        if ($shortLink->one_time) {
+
+            return DB::transaction(function () use ($shortLink, $request, $now) {
+
+                $otl = OneTimeLink::where('short_link_id', $shortLink->id)
+                    ->whereNull('used_at')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$otl) {
+                    return view('redirect.expired');
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | JIKA DESTINATION TYPE = URL → HABISKAN SEKARANG
+                |--------------------------------------------------------------------------
+                */
+                if ($shortLink->destination_type === 'url') {
+
+                    $otl->update([
+                        'used_at' => $now,
+                        'used_ip' => $request->ip(),
+                        'used_ua' => $request->userAgent(),
+                    ]);
+                }
+
+                // Update click (hanya jika lolos)
+                $this->logClick($request, $shortLink);
+                $shortLink->increment('click_count');
+                $shortLink->update([
+                    'last_clicked_at' => $now
+                ]);
+
+                // Target + token
+                $target = $shortLink->destination_type === 'file'
+                    ? route('file.preview', $shortLink->short_code)
+                    : $shortLink->destination_url;
+
+                $targetWithToken = $target
+                    . (str_contains($target, '?') ? '&' : '?')
+                    . 't=' . $otl->token_hash;
+
+                return view('redirect.basic', [
+                    'target' => $targetWithToken,
+                    'ads'    => null,
+                ]);
+            });
         }
 
         if ($shortLink->require_otp) {

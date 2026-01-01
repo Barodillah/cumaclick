@@ -92,6 +92,17 @@
                         <p>Seret & lepas file, atau klik untuk memilih</p>
                         <input type="file" name="file" id="fileInput" class="d-none">
                     </div>
+                    <small class="text-muted d-block mt-2 text-center">
+                        Maksimal ukuran file:
+                        @guest 5 MB atau login dulu @endguest
+                        @auth
+                            @if(auth()->user()->tier === 'basic') 10 MB
+                            @elseif(auth()->user()->tier === 'premium') 30 MB
+                            @elseif(auth()->user()->tier === 'diamond') 100 MB
+                            @endif
+                        @endauth
+                    </small>
+
 
                     <div id="preview" class="mt-3 text-center"></div>
 
@@ -148,4 +159,79 @@
     @endauth
 
 </div>
+<script>
+    window.uploadConfig = {
+        isAuth: @json(auth()->check()),
+        tier: @json(auth()->check() ? auth()->user()->tier : 'guest'),
+        limits: {
+            guest: 5,     // MB
+            basic: 10,    // MB
+            premium: 30,  // MB
+            diamond: 100  // MB
+        }
+    };
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('fileInput');
+    const form = fileInput.closest('form');
+    const preview = document.getElementById('preview');
+
+    function getMaxSizeMB() {
+        if (!window.uploadConfig.isAuth) {
+            return window.uploadConfig.limits.guest;
+        }
+        return window.uploadConfig.limits[window.uploadConfig.tier] ?? 5;
+    }
+
+    function showAlert(maxMB) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Ukuran file terlalu besar',
+            html: `
+                Maksimal upload <b>${maxMB} MB</b><br>
+                Anda adalah <b>${window.uploadConfig.tier.toUpperCase()}</b>
+            `,
+            confirmButtonText: 'Mengerti'
+        });
+    }
+
+    fileInput.addEventListener('change', () => {
+        preview.innerHTML = '';
+
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const maxMB = getMaxSizeMB();
+        const maxBytes = maxMB * 1024 * 1024;
+
+        if (file.size > maxBytes) {
+            fileInput.value = '';
+            showAlert(maxMB);
+            return;
+        }
+
+        // preview info
+        preview.innerHTML = `
+            <div class="alert alert-success">
+                <i class="fa-solid fa-file me-1"></i>
+                ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)
+            </div>
+        `;
+    });
+
+    // blok submit kalau maksa
+    form.addEventListener('submit', (e) => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const maxMB = getMaxSizeMB();
+        if (file.size > maxMB * 1024 * 1024) {
+            e.preventDefault();
+            showAlert(maxMB);
+        }
+    });
+});
+</script>
+
 @endsection
