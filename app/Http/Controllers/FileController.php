@@ -13,7 +13,16 @@ class FileController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+
         $files = ShortLink::where('destination_type', 'file')
+
+            // 🔐 Filter user (kecuali admin)
+            ->when($user->role !== 'admin', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+
+            // 🔍 Search
             ->when($request->filled('q'), function ($query) use ($request) {
                 $q = $request->q;
 
@@ -23,6 +32,7 @@ class FileController extends Controller
                         ->orWhere('destination_url', 'LIKE', "%{$q}%");
                 });
             })
+
             ->latest()
             ->paginate(24)
             ->withQueryString();
