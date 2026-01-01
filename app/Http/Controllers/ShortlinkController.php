@@ -59,7 +59,7 @@ class ShortlinkController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|max:5120'
+            'file' => 'required|file'
         ]);
 
         $uploadedFile = $request->file('file');

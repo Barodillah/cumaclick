@@ -31,12 +31,6 @@ class User extends Authenticatable
         return $this->hasMany(Otp::class);
     }
 
-    // mutator password otomatis di-hash
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = Hash::make($value);
-    }
-
     public function isAdmin()
     {
         return $this->role === 'admin';
