@@ -1,26 +1,62 @@
-<nav class="navbar-custom d-flex align-items-center justify-content-between px-4 py-3">
-<a href="{{ url('/') }}">
-    <span class="brand fs-4 fw-bold">cuma.click</span>
-</a>    
+<nav class="navbar navbar-expand-md navbar-custom px-4 py-3 d-flex justify-content-between align-items-center">
+    <a href="{{ url('/') }}" class="text-primary navbar-brand fw-bold fs-4">
+        cuma.click
+    </a>
 
-    <div class="nav-user">
-        @auth
-            <span class="me-3 text-dark">
-                <i class="fa-brands fa-bilibili me-1"></i> Halo, 
-                <a href="javascript:void(0)" data-bs-toggle="dropdown"><strong>{{ auth()->user()->name }}</strong></a>
-                <div class="dropdown-menu dropdown-menu-end">
-                    <a class="dropdown-item" href="{{ route('profile') }}">
-                        <i class="fa-solid fa-user me-2"></i>Profile
-                    </a>
-                    <a class="dropdown-item" href="{{ route('logout') }}">
-                        <i class="fa-solid fa-power-off me-2"></i>Logout
-                    </a>
-                </div>
-            </span>
-        @else
-            <a href="{{ route('login') }}" class="login-link">
-                Login
+    {{-- ===== JIKA LOGIN ===== --}}
+    @auth
+        <div class="dropdown">
+            <a href="#" class="text-dark fw-semibold text-decoration-none"
+               data-bs-toggle="dropdown">
+                <i class="fa-brands fa-bilibili me-1"></i>
+                Halo, {{ auth()->user()->name }}
             </a>
-        @endauth
-    </div>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                    <a class="dropdown-item" href="{{ route('profile') }}">
+                        <i class="fa-solid fa-user me-2"></i> Profile
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-danger" href="{{ route('logout') }}">
+                        <i class="fa-solid fa-power-off me-2"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    {{-- ===== JIKA GUEST ===== --}}
+    @else
+        {{-- hamburger: hanya muncul < md --}}
+        <button class="navbar-toggler d-md-none" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarGuest">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        {{-- menu: langsung tampil di desktop --}}
+        <div class="collapse navbar-collapse justify-content-end" id="navbarGuest">
+            <ul class="navbar-nav">
+
+                @if (Request::is('/'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="#fitur">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#faq">FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#kontak">Contact</a>
+                    </li>
+                @endif
+
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{{ route('login') }}">
+                        Login
+                    </a>
+                </li>
+            </ul>
+        </div>
+    @endauth
 </nav>

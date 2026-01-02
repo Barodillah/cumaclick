@@ -99,13 +99,15 @@
                         <th>User</th>
                         <th>Status</th>
                         <th>Joined</th>
-                        <th class="text-end">Action</th>
+                        <!-- <th class="text-end">Action</th> -->
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($users as $user)
                         <tr>
-                            <td class="text-muted">{{ $loop->iteration }}</td>
+                            <td class="text-muted">
+                                {{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}
+                            </td>
                             <td>
                                 <div class="fw-semibold">{{ $user->name }}</div>
                                 <small class="text-muted">{{ $user->email }}</small>
@@ -124,7 +126,7 @@
                             <td class="text-muted">
                                 {{ $user->created_at->format('d M Y') }}
                             </td>
-                            <td class="text-end">
+                            <!-- <td class="text-end">
                                 <div class="btn-group btn-group-sm">
                                     <a href="#" class="btn btn-light border">
                                         <i class="fa-solid fa-eye"></i>
@@ -133,7 +135,7 @@
                                         <i class="fa-solid fa-ban"></i>
                                     </a>
                                 </div>
-                            </td>
+                            </td> -->
                         </tr>
                     @empty
                         <tr>
@@ -173,8 +175,10 @@
                 <tbody>
                     @forelse ($topups as $topup)
                         <tr>
-                            <td>{{ $loop->iteration + ($topups->currentPage() - 1) * $topups->perPage() }}</td>
-                            <td>{{ $topup->user->name ?? '-' }}</td>
+                            <td>
+                                {{ ($topups->currentPage() - 1) * $topups->perPage() + $loop->iteration }}
+                            </td>
+                            <td>{{ $topup->user->email ?? '-' }}</td>
                             <td>{{ number_format($topup->coins, 0, ',', '.') }}</td>
                             <td>{{ number_format($topup->gross_amount, 0, ',', '.') }}</td>
                             <td>{{ $topup->payment_type ?? '-' }}</td>

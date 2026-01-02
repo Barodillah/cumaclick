@@ -136,6 +136,27 @@
             }
         }
 
+        .fa-coins {
+            position: relative;
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            line-height: 1em;
+            vertical-align: -0.125em; /* sejajar teks */
+        }
+
+        /* Hilangkan icon FA */
+        .fa-coins::before {
+            content: "";
+        }
+
+        /* Ganti dengan gambar */
+        .fa-coins::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('/coin2.png') center / contain no-repeat;
+        }
     </style>
     @stack('styles')
 </head>

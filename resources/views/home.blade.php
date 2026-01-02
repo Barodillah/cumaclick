@@ -147,18 +147,24 @@
     </div>
 
     @auth
-        <div class="text-center my-3">
-            <a href="{{ route('links.index') }}" class="text-dark fw-semibold">
-                <i class="fa-solid fa-clipboard-list me-2"></i> Lihat Semua Shortlink Anda
+    {{-- optional: CTA lain untuk user login --}}
+    @else
+        <div class="text-center my-4">
+            <p class="text-muted mb-0">
+                Daftar gratis dan nikmati fitur lengkap cuma.click
+            </p>
+            <a href="{{ route('register') }}"
+            class="btn btn-primary btn-sm px-5 shadow-sm mt-2">
+                <i class="fa-solid fa-person-running me-2"></i>
+                Gabung Sekarang
             </a>
         </div>
-    @else
-        <p class="text-center my-3">
-            Daftar untuk mendapatkan fitur lengkap secara gratis!
-        </p>
     @endauth
 
+
+@include('partials.landing-page')
 </div>
+@include('partials.landing-footer')
 <script>
     window.uploadConfig = {
         isAuth: @json(auth()->check()),

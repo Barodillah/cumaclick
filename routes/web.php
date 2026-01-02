@@ -13,6 +13,13 @@ use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\TopupController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/syarat-ketentuan', function () {
+    return view('legal.terms');
+})->name('terms');
+
+Route::get('/kebijakan-privasi', function () {
+    return view('legal.privacy');
+})->name('privacy');
 
 Route::post('/shorten', [ShortlinkController::class, 'store'])->name('shorten');
 Route::post('/shorten/update', [ShortlinkController::class, 'update'])->name('shorten.update');

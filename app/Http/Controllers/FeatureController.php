@@ -44,8 +44,8 @@ class FeatureController extends Controller
             'activeUsers'   => \App\Models\User::whereNotNull('email_verified_at')->count(),
             'totalRevenue'  => \App\Models\Topup::where('transaction_status', 'success')
                                     ->sum('gross_amount'),
-            'users'         => \App\Models\User::latest()->paginate(10),
-            'topups'        => \App\Models\Topup::with('user')->latest()->paginate(10), // ambil data topup terbaru
+            'users'         => \App\Models\User::latest()->paginate(10, ['*'], 'users_page'),
+            'topups'        => \App\Models\Topup::with('user')->latest()->paginate(10, ['*'], 'topups_page'), // ambil data topup terbaru
         ]);
     }
 

@@ -109,7 +109,10 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|min:6|confirmed',
+            'terms' => 'accepted'
+        ], [
+            'terms.accepted' => 'Anda harus menyetujui Syarat & Ketentuan'
         ]);
 
         DB::transaction(function () use ($request, &$user) {
