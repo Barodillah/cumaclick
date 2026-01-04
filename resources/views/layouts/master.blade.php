@@ -10,7 +10,7 @@
 
     <title>@yield('title', 'Cuma Click - Lebih dari Sekedar Link')</title>
 
-    <meta name="description" content="Cuma Click adalah platform pemendek link yang kuat dengan analitik, proteksi PIN, hosting file, dan banyak lagi.">
+    <meta name="description" content="@yield('description', 'Cuma Click adalah platform pemendek link yang kuat dengan analitik, proteksi PIN, hosting file, dan banyak lagi.')">
     <meta name="keywords" content="pemendek link, shortlink, hosting file, proteksi PIN, analitik, cuma click">
     <meta name="author" content="Cuma Click">
     <meta name="robots" content="index, follow">
@@ -19,8 +19,8 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://cuma.click/">
     <meta property="og:title" content="Cuma Click - Lebih dari Sekedar Link">
-    <meta property="og:description" content="Platform pemendek link yang kuat dengan analitik, proteksi PIN, hosting file, dan banyak lagi.">
-    <meta property="og:image" content="https://cuma.click/favicon.png">
+    <meta property="og:description" content="@yield('description', 'Platform pemendek link yang kuat dengan analitik, proteksi PIN, hosting file, dan banyak lagi.')">
+    <meta property="og:image" content="@yield('favicon', 'https://cuma.click/favicon.png')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Twitter --}}
@@ -36,6 +36,9 @@
 
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         .countdown-number {
             font-size: 1.4rem;

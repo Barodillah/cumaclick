@@ -11,6 +11,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\TopupController;
+use App\Http\Controllers\GoogleController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/syarat-ketentuan', function () {
@@ -20,6 +21,8 @@ Route::get('/syarat-ketentuan', function () {
 Route::get('/kebijakan-privasi', function () {
     return view('legal.privacy');
 })->name('privacy');
+
+Route::post('/contact', [HomeController::class, 'sendContact'])->name('contact.send');
 
 Route::post('/shorten', [ShortlinkController::class, 'store'])->name('shorten');
 Route::post('/shorten/update', [ShortlinkController::class, 'update'])->name('shorten.update');
@@ -35,6 +38,9 @@ Route::post('login', [AuthController::class, 'login'])->name('login.post');
 
 Route::get('register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('register', [AuthController::class, 'register'])->name('register.post');
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.redirect');
+Route::get('/auth/google-callback', [GoogleController::class, 'callback']);
 
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 

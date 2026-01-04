@@ -2,9 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Menghubungkan...</title>
+    <title>{{ $title ?? 'Cuma Click - Lebih dari Sekedar Link' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta property="og:description" content="{{ $description ?? 'Platform pemendek link yang kuat dengan analitik, proteksi PIN, hosting file, dan banyak lagi.' }}">
+    <meta property="og:image" content="{{ $favicon ?? asset('favicon.png') }}">
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 

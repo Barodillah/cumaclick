@@ -211,3 +211,68 @@ nav .brand {
         height: 120px;
     }
 }
+
+/* ===== Outline Buttons ===== */
+.btn-outline-primary {
+    color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    background-color: transparent;
+}
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+.btn-outline-info {
+    color: var(--bs-info);
+    border-color: var(--bs-info);
+    background-color: transparent;
+}
+.btn-outline-info:hover {
+    color: #fff;
+    background-color: var(--bs-info);
+    border-color: var(--bs-info);
+}
+
+.btn-outline-success {
+    color: var(--bs-success);
+    border-color: var(--bs-success);
+    background-color: transparent;
+}
+.btn-outline-success:hover {
+    color: #fff;
+    background-color: var(--bs-success);
+    border-color: var(--bs-success);
+}
+
+.btn-outline-warning {
+    color: #ce9a00;
+    border-color: #ce9a00;
+    background-color: transparent;
+}
+.btn-outline-warning:hover {
+    color: #3a3a3a;
+    background-color: var(--bs-warning);
+    border-color: var(--bs-warning);
+}
+
+.btn-outline-danger {
+    color: var(--bs-danger);
+    border-color: var(--bs-danger);
+    background-color: transparent;
+}
+.btn-outline-danger:hover {
+    color: #fff;
+    background-color: var(--bs-danger);
+    border-color: var(--bs-danger);
+}
+
+/* Optional: Smooth transition */
+.btn-outline-primary,
+.btn-outline-info,
+.btn-outline-success,
+.btn-outline-warning,
+.btn-outline-danger {
+    transition: all 0.2s ease-in-out;
+}

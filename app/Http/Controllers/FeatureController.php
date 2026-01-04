@@ -11,6 +11,8 @@ use App\Models\{
     Topup
 };
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class FeatureController extends Controller
 {
@@ -39,13 +41,31 @@ class FeatureController extends Controller
     {
         $this->authorizeAdmin();
 
+        // Data Statistik Utama
+        $stats = [
+            'totalUsers'   => User::count(),
+            'activeUsers'  => User::whereNotNull('email_verified_at')->count(),
+            'totalRevenue' => Topup::where('transaction_status', 'success')->sum('gross_amount'),
+            'newUsersToday'=> User::whereDate('created_at', Carbon::today())->count(),
+        ];
+
+        // Data untuk Chart (7 Hari Terakhir)
+        $days = collect(range(6, 0))->map(function($i) {
+            return Carbon::now()->subDays($i)->format('Y-m-d');
+        });
+
+        $userChartData = $days->map(fn($date) => User::whereDate('created_at', $date)->count());
+        $revenueChartData = $days->map(fn($date) => 
+            Topup::where('transaction_status', 'success')->whereDate('created_at', $date)->sum('gross_amount')
+        );
+
         return view('admin.index', [
-            'totalUsers'    => \App\Models\User::count(),
-            'activeUsers'   => \App\Models\User::whereNotNull('email_verified_at')->count(),
-            'totalRevenue'  => \App\Models\Topup::where('transaction_status', 'success')
-                                    ->sum('gross_amount'),
-            'users'         => \App\Models\User::latest()->paginate(10, ['*'], 'users_page'),
-            'topups'        => \App\Models\Topup::with('user')->latest()->paginate(10, ['*'], 'topups_page'), // ambil data topup terbaru
+            'stats'        => (object) $stats,
+            'chartLabels'  => $days->map(fn($date) => Carbon::parse($date)->format('d M')),
+            'userChart'    => $userChartData,
+            'revenueChart' => $revenueChartData,
+            'users'        => User::latest()->paginate(10, ['*'], 'users_page'),
+            'topups'       => Topup::with('user')->latest()->paginate(10, ['*'], 'topups_page'),
         ]);
     }
 

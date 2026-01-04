@@ -188,7 +188,9 @@ class RedirectController extends Controller
                 'target' => $shortLink->destination_type === 'file'
                     ? route('file.preview', $shortLink->short_code)
                     : $shortLink->destination_url,
-                'ads'   => $ads,
+                'title'   => $shortLink->title,
+                'description'   => $shortLink->description,
+                'favicon'   => $shortLink->note,
             ]);
         }
 
@@ -304,24 +306,56 @@ class RedirectController extends Controller
     private function logClick(Request $request, ShortLink $shortLink)
     {
         $agent = new Agent();
+        $ip = $request->ip();
+
+        // =============================
+        // GEO VIA API (PASTI TERISI)
+        // =============================
+        $geo = null;
+
+        try {
+            $response = Http::timeout(2)
+                ->get("http://ip-api.com/json/{$ip}?fields=status,country,countryCode,regionName,city,timezone,lat,lon");
+
+            if ($response->ok() && $response['status'] === 'success') {
+                $geo = $response;
+            }
+        } catch (\Throwable $e) {
+            $geo = null;
+        }
 
         Click::create([
             'short_link_id' => $shortLink->id,
             'short_code'    => $shortLink->short_code,
 
-            'ip_address' => $request->ip(),
+            // Identitas
+            'ip_address' => $ip,
             'user_agent' => $request->userAgent(),
             'referer'    => $request->headers->get('referer'),
 
+            // =============================
+            // LOKASI (PASTI TERISI)
+            // =============================
+            'country'      => $geo['country'] ?? null,
+            'country_code' => $geo['countryCode'] ?? null,
+            'region'       => $geo['regionName'] ?? null,
+            'city'         => $geo['city'] ?? null,
+            'timezone'     => $geo['timezone'] ?? null,
+            'latitude'     => $geo['lat'] ?? null,
+            'longitude'    => $geo['lon'] ?? null,
+
             // Device
-            'device_type' => $agent->isMobile() ? 'mobile' : ($agent->isTablet() ? 'tablet' : 'desktop'),
-            'device_brand'=> $agent->device(),
-            'device_model'=> $agent->platform(),
+            'device_type'  => $agent->isMobile()
+                ? 'mobile'
+                : ($agent->isTablet() ? 'tablet' : 'desktop'),
+
+            'device_brand' => $agent->device(),
+            'device_model' => $agent->platform(),
 
             // OS & Browser
-            'os'          => $agent->platform(),
-            'os_version'  => $agent->version($agent->platform()),
-            'browser'     => $agent->browser(),
+            'os'              => $agent->platform(),
+            'os_version'      => $agent->version($agent->platform()),
+            'browser'         => $agent->browser(),
             'browser_version' => $agent->version($agent->browser()),
 
             // Tambahan

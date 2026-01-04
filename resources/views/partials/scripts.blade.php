@@ -44,53 +44,53 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
     
     <script>
-document.addEventListener("DOMContentLoaded", function () {
+// document.addEventListener("DOMContentLoaded", function () {
 
-    const dropArea  = document.getElementById('dropArea');
-    const fileInput = document.getElementById('fileInput');
-    const preview   = document.getElementById('preview');
+//     const dropArea  = document.getElementById('dropArea');
+//     const fileInput = document.getElementById('fileInput');
+//     const preview   = document.getElementById('preview');
 
-    if (dropArea && fileInput && preview) {
+//     if (dropArea && fileInput && preview) {
 
-        dropArea.addEventListener('click', () => fileInput.click());
+//         dropArea.addEventListener('click', () => fileInput.click());
 
-        dropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropArea.classList.add('bg-dark');
-        });
+//         dropArea.addEventListener('dragover', (e) => {
+//             e.preventDefault();
+//             dropArea.classList.add('bg-dark');
+//         });
 
-        dropArea.addEventListener('dragleave', () => {
-            dropArea.classList.remove('bg-dark');
-        });
+//         dropArea.addEventListener('dragleave', () => {
+//             dropArea.classList.remove('bg-dark');
+//         });
 
-        dropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropArea.classList.remove('bg-dark');
-            fileInput.files = e.dataTransfer.files;
-            showPreview(fileInput.files[0]);
-        });
+//         dropArea.addEventListener('drop', (e) => {
+//             e.preventDefault();
+//             dropArea.classList.remove('bg-dark');
+//             fileInput.files = e.dataTransfer.files;
+//             showPreview(fileInput.files[0]);
+//         });
 
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length > 0) {
-                showPreview(fileInput.files[0]);
-            }
-        });
+//         fileInput.addEventListener('change', () => {
+//             if (fileInput.files.length > 0) {
+//                 showPreview(fileInput.files[0]);
+//             }
+//         });
 
-        function showPreview(file) {
-            preview.innerHTML = '';
+//         function showPreview(file) {
+//             preview.innerHTML = '';
 
-            if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                img.className = "img-fluid rounded shadow mt-2";
-                img.style.maxHeight = "250px";
-                preview.appendChild(img);
-            } else {
-                preview.innerHTML =
-                    `<p>File: ${file.name} (${Math.round(file.size / 1024)} KB)</p>`;
-            }
-        }
-    }
+//             if (file.type.startsWith('image/')) {
+//                 const img = document.createElement('img');
+//                 img.src = URL.createObjectURL(file);
+//                 img.className = "img-fluid rounded shadow mt-2";
+//                 img.style.maxHeight = "250px";
+//                 preview.appendChild(img);
+//             } else {
+//                 preview.innerHTML =
+//                     `<p>File: ${file.name} (${Math.round(file.size / 1024)} KB)</p>`;
+//             }
+//         }
+//     }
     
     const copyBtn = document.getElementById("copyBtn");
     const previewLink = document.getElementById("previewLink");

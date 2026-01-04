@@ -243,31 +243,43 @@ class LinkController extends Controller
             })
             ->firstOrFail();
 
-        $clicks = $link->clicks()
-            ->latest('clicked_at')
-            ->get();
+        // 1. Ambil SEMUA data untuk perhitungan Analytics (Tanpa Pagination)
+        $allClicks = $link->clicks()->latest('clicked_at')->get();
 
-        // === ANALYTICS ===
-        $totalClicks  = $clicks->count();
-        $uniqueClicks = $clicks->unique('ip_address')->count();
+        // 2. Ambil data dengan PAGINATION untuk Tabel (Hanya untuk daftar di bawah)
+        $clicks = $link->clicks()->latest('clicked_at')->paginate(15);
 
-        $deviceStats  = $clicks->groupBy('device_type')->map->count();
-        $browserStats = $clicks->groupBy('browser')->map->count();
-        $countryStats = $clicks->groupBy('country')->map->count();
+        // === ANALYTICS (Gunakan $allClicks agar mencakup semua data) ===
+        $totalClicks  = $allClicks->count();
+        $uniqueClicks = $allClicks->unique('ip_address')->count();
 
-        $dailyClicks = $clicks
+        $deviceStats  = $allClicks->groupBy('device_type')->map->count();
+        $browserStats = $allClicks->groupBy('browser')->map->count();
+        $countryStats = $allClicks->groupBy('country')->map->count();
+
+        $dailyClicks = $allClicks
             ->groupBy(fn ($c) => $c->clicked_at->format('Y-m-d'))
             ->map->count();
 
+        $botClicks = $allClicks->where('is_bot', true)->count();
+        $humanClicks = $totalClicks - $botClicks;
+
+        $osStats = $allClicks->groupBy('os')->map->count();
+        $utmSourceStats = $allClicks->groupBy('utm_source')->map->count();
+
         return view('links.clicks', compact(
             'link',
-            'clicks',
+            'clicks', // Ini yang dipaginasi (untuk tabel)
             'totalClicks',
             'uniqueClicks',
             'deviceStats',
             'browserStats',
             'countryStats',
-            'dailyClicks'
+            'dailyClicks',
+            'botClicks',
+            'humanClicks',
+            'osStats',
+            'utmSourceStats'
         ));
     }
 
@@ -366,13 +378,26 @@ class LinkController extends Controller
             ->when($user->role === 'admin', fn ($q) => $q->with('user'))
             ->get();
 
+        /* =========================
+        | DATA UNTUK CHART (7 Hari Terakhir)
+        ========================= */
+        $days = collect();
+        $clickData = collect();
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $days->push(now()->subDays($i)->format('d M')); // Label: 01 Jan
+
+            $count = \App\Models\Click::whereIn('short_link_id', (clone $baseQuery)->pluck('id'))
+                ->whereDate('created_at', $date)
+                ->count();
+                
+            $clickData->push($count);
+        }
+
         return view('links.dashboard', compact(
-            'links',
-            'totalLinks',
-            'totalClicks',
-            'uniqueClicks',
-            'conversionRate',
-            'topLinks'
+            'links', 'totalLinks', 'totalClicks', 'uniqueClicks', 
+            'conversionRate', 'topLinks', 'days', 'clickData'
         ));
     }
 

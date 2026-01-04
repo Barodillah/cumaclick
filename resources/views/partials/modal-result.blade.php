@@ -1,5 +1,5 @@
 <div class="modal fade" id="resultModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-3">
             <div class="modal-header">
                 <h5 class="modal-title">Shortlink Dibuat</h5>
@@ -51,9 +51,17 @@
                         <i class="fa-solid fa-copy me-2"></i> Copy link
                     </button>
                     @auth
-                    <a href="links/{{ session('short_result')['code'] ?? '' }}/edit" class="btn btn-outline-secondary btn-sm ms-1">
+                    @php
+                        $editCode = (session('open_result_modal') && $errors->has('short_code'))
+                            ? old('old_code')
+                            : (session('short_result')['code'] ?? null);
+                    @endphp
+
+                    @if($editCode)
+                    <a href="links/{{ $editCode }}/edit" class="btn btn-outline-secondary btn-sm ms-1">
                         <i class="fa-solid fa-gear me-2"></i> Other setting
                     </a>
+                    @endif
                     @endauth
                 </div>
             </div>

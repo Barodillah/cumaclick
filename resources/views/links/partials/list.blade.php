@@ -112,12 +112,89 @@
         <div class="row mt-2">
             <div class="col-12">
 
+                @php
+                    $fileExt = null;
+
+                    if ($link->destination_type === 'file' && $link->destination_url) {
+                        $fileExt = strtolower(pathinfo($link->destination_url, PATHINFO_EXTENSION));
+                    }
+
+                    $fileIcons = [
+                        'image' => ['jpg','jpeg','png','gif','webp','bmp','svg'],
+                        'video' => ['mp4','mkv','avi','mov','webm'],
+                        'pdf'   => ['pdf'],
+                        'word'  => ['doc','docx'],
+                        'excel' => ['xls','xlsx','csv'],
+                        'ppt'   => ['ppt','pptx'],
+                        'text'  => ['txt','md','log'],
+                        'code'  => ['html','css','js','php','py','java','json','xml','sh','ts']
+                    ];
+
+                    $iconClass = 'fa-file';
+                    $iconColor = 'text-secondary';
+
+                    if ($fileExt) {
+                        if (in_array($fileExt, $fileIcons['image'])) {
+                            $iconClass = 'fa-file-image';
+                            $iconColor = 'text-success';
+                        } elseif (in_array($fileExt, $fileIcons['video'])) {
+                            $iconClass = 'fa-file-video';
+                            $iconColor = 'text-danger';
+                        } elseif (in_array($fileExt, $fileIcons['pdf'])) {
+                            $iconClass = 'fa-file-pdf';
+                            $iconColor = 'text-danger';
+                        } elseif (in_array($fileExt, $fileIcons['word'])) {
+                            $iconClass = 'fa-file-word';
+                            $iconColor = 'text-primary';
+                        } elseif (in_array($fileExt, $fileIcons['excel'])) {
+                            $iconClass = 'fa-file-excel';
+                            $iconColor = 'text-success';
+                        } elseif (in_array($fileExt, $fileIcons['ppt'])) {
+                            $iconClass = 'fa-file-powerpoint';
+                            $iconColor = 'text-warning';
+                        } elseif (in_array($fileExt, $fileIcons['text'])) {
+                            $iconClass = 'fa-file-lines';
+                            $iconColor = 'text-muted';
+                        } elseif (in_array($fileExt, $fileIcons['code'])) {
+                            $iconClass = 'fa-file-code';
+                            $iconColor = 'text-info';
+                        }
+                    }
+                @endphp
                 <div class="text-muted small">
-                    <a class="text-decoration-none text-muted small" href="{{ $link->destination_type === 'url'
-                    ? $link->destination_url
-                    : url($link->short_code) }}" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i>
-                    {{ Str::limit($link->destination_url, 80) }}</a>
+                    <a class="text-decoration-none text-muted small"
+                    href="{{ $link->destination_type === 'url'
+                                ? $link->destination_url
+                                : ($link->destination_type === 'file'
+                                    ? asset('storage/' . $link->destination_url)
+                                    : url($link->short_code)) }}"
+                    target="_blank">
+
+                        {{-- ICON --}}
+                        @if ($link->destination_type === 'url'
+                            && \Illuminate\Support\Str::startsWith($link->note, ['http://', 'https://']))
+                            
+                            <img src="{{ $link->note }}"
+                                width="16"
+                                height="16"
+                                class="me-1 align-text-bottom rounded">
+
+                        @elseif ($link->destination_type === 'file')
+                            <i class="fa-solid {{ $iconClass }} {{ $iconColor }} me-1"></i>
+                        @else
+                            <i class="fa-solid fa-globe me-1"></i>
+                        @endif
+
+                        {{-- TEXT --}}
+                        {{ \Illuminate\Support\Str::limit(
+                            $link->destination_type === 'file'
+                                ? basename($link->destination_url)
+                                : $link->destination_url,
+                            80
+                        ) }}
+                    </a>
                 </div>
+
                 @auth
                     @if(auth()->user()->role === 'admin')
                         <div class="text-muted small">

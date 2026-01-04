@@ -257,12 +257,8 @@ class WalletController extends Controller
         $user = auth()->user();
         $wallet = $user->wallet;
 
-        $charges = $request->charges; 
-        // contoh:
-        // [
-        //   { key: "custom_3", label: "...", price: 10 },
-        //   { key: "require_otp", label: "...", price: 5 }
-        // ]
+        $charges = $request->charges;
+        $linkId  = $request->link_id;
 
         if (!$wallet) {
             return response()->json([
@@ -280,7 +276,7 @@ class WalletController extends Controller
             ], 422);
         }
 
-        DB::transaction(function () use ($wallet, $charges, $user, $total) {
+        DB::transaction(function () use ($wallet, $charges, $user, $total, $linkId) {
 
             // 1. Kurangi saldo total
             $wallet->decrement('balance', $total);
@@ -291,8 +287,8 @@ class WalletController extends Controller
                     'type' => 'debit',
                     'amount' => $item['price'],
                     'source' => 'feature_upgrade',
-                    'related_type' => 'features',
-                    'related_id' => null,
+                    'related_type' => 'short_links',
+                    'related_id' => $linkId,
                     'description' => 'Upgrade feature: ' . $item['label'],
                     'meta' => json_encode([
                         'feature' => $item['key']

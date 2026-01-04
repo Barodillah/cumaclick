@@ -351,7 +351,7 @@ class AuthController extends Controller
 
         // Update password
         $user->update([
-            'password' => $request->password,
+            'password' => Hash::make($request->password),
         ]);
 
         // Hapus session reset

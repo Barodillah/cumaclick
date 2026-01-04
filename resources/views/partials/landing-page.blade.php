@@ -1,234 +1,300 @@
-<hr class="my-5">
-<section id="fitur" class="py-5 bg-light">
-    <div class="container">
+@push('styles')
+<style>
+    /* Global Section Styling */
+    .section-title {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 3rem;
+    }
+    
+    /* Modern Glass Card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        border-color: rgba(13, 110, 253, 0.3);
+    }
+
+    /* Icon Styling */
+    .feature-icon-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        margin: 0 auto 20px;
+    }
+
+    /* Modern Accordion */
+    .accordion-item {
+        border: none;
+        background: transparent;
+        margin-bottom: 1rem;
+    }
+    .accordion-button {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(5px);
+        border-radius: 15px !important;
+        font-weight: 600;
+        box-shadow: none !important;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .accordion-button:not(.collapsed) {
+        background: rgba(180, 90, 113, 0.05);
+        color: #B45A71;
+        border-color: rgba(180, 90, 113, 0.2);
+    }
+
+    /* Contact Info Badge */
+    .contact-link-item {
+        padding: 15px;
+        border-radius: 15px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+    }
+    .contact-link-item:hover {
+        background: white;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        color: #B45A71;
+    }
+    
+</style>
+@endpush
+<hr class="my-5 opacity-0">
+
+<section id="fitur" class="py-5 position-relative overflow-hidden">
+    <div class="secure-icons opacity-25 d-none d-md-block">
+        <i class="fa-solid fa-link" style="top: 5%; right: 10%;"></i>
+        <i class="fa-solid fa-chart-line" style="bottom: 10%; left: 5%;"></i>
+    </div>
+
+    <div class="container position-relative">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Fitur Utama cuma.click</h2>
-            <p class="text-muted">Solusi shortlink aman, cepat, dan profesional</p>
+            <h2 class="fw-bold">Fitur Utama <span class="text-primary text-gradient">cuma.click</span></h2>
+            <p class="text-muted">Infrastruktur canggih untuk keamanan data Anda</p>
         </div>
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm text-center p-4">
-                    <i class="fa-solid fa-link fa-2x text-primary mb-3"></i>
-                    <h5 class="fw-semibold">Smart Shortlink</h5>
-                    <p class="text-muted">
-                        Buat shortlink dengan custom alias, expired link, dan redirect super cepat.
-                    </p>
+                <div class="glass-card h-100 p-4 text-center border-0 shadow-sm">
+                    <div class="feature-icon-box bg-primary bg-opacity-10">
+                        <i class="fa-solid fa-link fa-xl text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold">Smart Shortlink</h5>
+                    <p class="text-muted small">Custom alias sesuka hati, atur tanggal kadaluarsa, dan redirect instan tanpa jeda iklan.</p>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm text-center p-4">
-                    <i class="fa-solid fa-shield-halved fa-2x text-success mb-3"></i>
-                    <h5 class="fw-semibold">Keamanan Link</h5>
-                    <p class="text-muted">
-                        Lindungi link Anda dengan OTP, one-time access, dan kontrol penuh.
-                    </p>
+                <div class="glass-card h-100 p-4 text-center border-0 shadow-sm">
+                    <div class="feature-icon-box bg-success bg-opacity-10">
+                        <i class="fa-solid fa-shield-halved fa-xl text-success"></i>
+                    </div>
+                    <h5 class="fw-bold">Keamanan PIN & OTP</h5>
+                    <p class="text-muted small">Proteksi link rahasia Anda dengan verifikasi PIN atau OTP sebelum tujuan akhir dibuka.</p>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm text-center p-4">
-                    <i class="fa-solid fa-chart-line fa-2x text-warning mb-3"></i>
-                    <h5 class="fw-semibold">Statistik Real-Time</h5>
-                    <p class="text-muted">
-                        Pantau klik, performa link, dan aktivitas pengguna secara real-time.
-                    </p>
+                <div class="glass-card h-100 p-4 text-center border-0 shadow-sm">
+                    <div class="feature-icon-box bg-warning bg-opacity-10">
+                        <i class="fa-solid fa-chart-line fa-xl text-warning"></i>
+                    </div>
+                    <h5 class="fw-bold">Analitik Real-Time</h5>
+                    <p class="text-muted small">Pantau lokasi pengunjung, perangkat yang digunakan, dan performa link secara transparan.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<section class="py-5">
+
+<section class="py-5 bg-white">
     <div class="container">
         <div class="row align-items-center g-5">
-            
-            <!-- SVG / Ilustrasi -->
-            <div class="col-md-6 text-center">
-                <!-- Ganti SVG ini dengan ilustrasi Anda -->
-                <img src="/secure.svg"
-                    alt="Ilustrasi Keamanan cuma.click"
-                    class="img-fluid">
+            <div class="col-md-6 text-center position-relative">
+                <div class="position-absolute top-50 start-50 translate-middle bg-primary opacity-10 rounded-circle" style="width: 300px; height: 300px; filter: blur(50px);"></div>
+                <img src="/secure.svg" alt="Security" class="img-fluid position-relative shadow-sm rounded-4">
             </div>
 
-            <!-- Alasan -->
             <div class="col-md-6">
-                <h2 class="fw-bold mb-3">Kenapa Harus cuma.click?</h2>
-                <p class="text-muted mb-4">
-                    cuma.click bukan sekadar pemendek link, tapi solusi lengkap untuk
-                    keamanan, analitik, dan profesionalitas link Anda.
-                </p>
-
-                <ul class="list-unstyled">
-                    <li class="d-flex mb-3">
-                        <i class="fa-solid fa-circle-check text-primary me-3 mt-1"></i>
-                        <span>Link lebih aman dengan OTP & one-time access</span>
-                    </li>
-                    <li class="d-flex mb-3">
-                        <i class="fa-solid fa-circle-check text-primary me-3 mt-1"></i>
-                        <span>Kontrol penuh atas masa aktif dan penggunaan link</span>
-                    </li>
-                    <li class="d-flex mb-3">
-                        <i class="fa-solid fa-circle-check text-primary me-3 mt-1"></i>
-                        <span>Cocok untuk personal, UMKM, hingga digital marketing</span>
-                    </li>
-                    <li class="d-flex">
-                        <i class="fa-solid fa-circle-check text-primary me-3 mt-1"></i>
-                        <span>Tanpa ribet, semua serba otomatis</span>
-                    </li>
-                </ul>
+                <h2 class="fw-bold mb-4">Kenapa Profesional Memilih <span class="text-primary">Kami?</span></h2>
+                <div class="d-flex align-items-start mb-4">
+                    <div class="me-3 p-2 bg-primary bg-opacity-10 rounded-3 text-primary">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Proteksi End-to-End</h6>
+                        <p class="text-muted small">Link dan file Anda dienkripsi untuk memastikan hanya pihak berhak yang dapat mengakses.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start mb-4">
+                    <div class="me-3 p-2 bg-primary bg-opacity-10 rounded-3 text-primary">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Kontrol Penuh 100%</h6>
+                        <p class="text-muted small">Ubah tujuan link atau hapus file kapan saja tanpa perlu mengganti URL yang sudah dibagikan.</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start">
+                    <div class="me-3 p-2 bg-primary bg-opacity-10 rounded-3 text-primary">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Siap untuk Bisnis & UMKM</h6>
+                        <p class="text-muted small">Dashboard intuitif yang dirancang untuk skala personal hingga campaign digital marketing besar.</p>
+                    </div>
+                </div>
             </div>
-
         </div>
     </div>
 </section>
-<section id="faq" class="py-5 bg-light">
+
+<section id="faq" class="py-5" style="background: #fbfcfe;">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Pertanyaan yang Sering Ditanyakan</h2>
+            <h2 class="fw-bold">Paling Sering Ditanyakan</h2>
             <p class="text-muted">Masalah umum yang diselesaikan oleh cuma.click</p>
         </div>
 
-        <div class="accordion" id="faqAccordion">
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                        Link saya sering disalahgunakan, solusinya?
-                    </button>
-                </h2>
-                <div id="faq1" class="accordion-collapse collapse show">
-                    <div class="accordion-body">
-                        cuma.click menyediakan OTP dan one-time link agar link hanya bisa
-                        diakses oleh orang yang berhak.
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Bagaimana cara kerja proteksi OTP pada link?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show">
+                            <div class="accordion-body text-muted small">
+                                Saat diaktifkan, pengunjung wajib memasukkan kode unik yang dikirim via kontak yang ditentukan sebelum sistem melakukan redirect ke URL tujuan.
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="accordion-item shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Apakah statistik klik bersifat publik?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse">
+                            <div class="accordion-body text-muted small">
+                                Tidak. Statistik klik sepenuhnya bersifat pribadi dan hanya bisa diakses oleh pembuat link melalui dashboard akun masing-masing.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Ada batasan untuk jumlah file yang diunggah?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse">
+                            <div class="accordion-body text-muted small">
+                                Batasan tergantung pada Tier akun Anda. Guest dibatasi 5MB, sementara Diamond bisa hingga 100MB per file dengan jumlah penyimpanan yang luas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Apakah link bisa diberi masa berlaku (expired)?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse">
+                            <div class="accordion-body text-muted small">
+                                Ya. Anda dapat mengatur tanggal atau jumlah klik maksimum. Setelah batas tercapai, link otomatis tidak dapat diakses.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                Apakah sistem mendeteksi klik bot atau spam?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse">
+                            <div class="accordion-body text-muted small">
+                                Sistem secara otomatis memfilter klik mencurigakan menggunakan analisis user agent, IP, dan pola perilaku sehingga data statistik tetap akurat.
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">
-                        Bisa lihat statistik siapa saja yang klik?
-                    </button>
-                </h2>
-                <div id="faq2" class="accordion-collapse collapse">
-                    <div class="accordion-body">
-                        Ya, Anda dapat melihat jumlah klik, waktu akses, dan performa link
-                        secara real-time.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">
-                        Apakah harus bayar untuk mulai?
-                    </button>
-                </h2>
-                <div id="faq3" class="accordion-collapse collapse">
-                    <div class="accordion-body">
-                        Tidak. Anda bisa mulai gratis, lalu upgrade jika membutuhkan fitur
-                        lanjutan.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">
-                        Apakah cocok untuk bisnis dan UMKM?
-                    </button>
-                </h2>
-                <div id="faq4" class="accordion-collapse collapse">
-                    <div class="accordion-body">
-                        Sangat cocok. cuma.click dirancang untuk kebutuhan profesional,
-                        promosi, dan tracking kampanye.
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
-<section id="kontak" class="py-5 bg-light">
+
+<section id="kontak" class="py-5 bg-white">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Hubungi Kami</h2>
-            <p class="text-muted">
-                Punya pertanyaan atau ingin kerja sama? Kirim pesan kepada kami.
-            </p>
-        </div>
-
-        <div class="row g-5 justify-content-center">
-
-            <!-- FORM -->
-            <div class="col-md-7">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <form>
-                            <div class="mb-3">
-                                <label class="form-label">Nama</label>
-                                <input type="text" class="form-control" placeholder="Nama lengkap">
+        <div class="main-tool-card p-4 p-md-5">
+            <div class="row g-5 align-items-center">
+                <div class="col-md-5">
+                    <h2 class="fw-bold mb-3">Mari <span class="text-primary">Bekerja Sama</span></h2>
+                    <p class="text-muted mb-5">Punya pertanyaan teknis atau ingin integrasi API khusus? Tim kami siap merespon pesan Anda segera.</p>
+                    
+                    <div class="contact-links">
+                        <a href="mailto:gmail@cuma.click" class="contact-link-item mb-3">
+                            <i class="fa-solid fa-envelope text-primary me-3 fs-4"></i>
+                            <div>
+                                <small class="text-muted d-block">Kirim Email</small>
+                                <span class="fw-bold">gmail@cuma.click</span>
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" placeholder="email@contoh.com">
+                        </a>
+                        <a href="https://wa.me/6281999934451" class="contact-link-item">
+                            <i class="fa-brands fa-whatsapp text-success me-3 fs-4"></i>
+                            <div>
+                                <small class="text-muted d-block">Fast Response</small>
+                                <span class="fw-bold">+62 819-9993-4451</span>
                             </div>
+                        </a>
+                    </div>
+                </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Pesan</label>
-                                <textarea class="form-control" rows="4" placeholder="Tuliskan pesan Anda..."></textarea>
+                <div class="col-md-7">
+                    <div class="bg-light p-4 rounded-4">
+                        <form method="POST" action="{{ route('contact.send') }}">
+                            @csrf
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Nama</label>
+                                    <input type="text" name="nama" class="form-control border-0 py-3 shadow-sm rounded-3" placeholder="Nama Anda">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Email</label>
+                                    <input type="email" name="email" class="form-control border-0 py-3 shadow-sm rounded-3" placeholder="email@anda.com">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Pesan</label>
+                                    <textarea name="pesan" rows="4" class="form-control border-0 shadow-sm rounded-3" placeholder="Tuliskan pesan Anda..."></textarea>
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button type="submit" class="btn btn-primary px-5 py-3 fw-bold shadow">
+                                        Kirim Pesan <i class="fa-solid fa-paper-plane ms-2"></i>
+                                    </button>
+                                </div>
                             </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa-solid fa-paper-plane me-2"></i>Kirim Pesan
-                            </button>
                         </form>
                     </div>
                 </div>
             </div>
-
-            <!-- INFO KONTAK -->
-            <div class="col-md-5">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <h5 class="fw-semibold mb-3">Informasi Kontak</h5>
-
-                        <p class="mb-3 text-muted">
-                            Anda juga dapat menghubungi kami melalui:
-                        </p>
-
-                        <div class="d-flex align-items-start mb-3">
-                            <i class="fa-solid fa-envelope text-primary me-3 mt-1"></i>
-                            <div>
-                                <strong>Email</strong><br>
-                                <a href="mailto:support@cuma.click" class="text-decoration-none">
-                                    support@cuma.click
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-start">
-                            <i class="fa-brands fa-whatsapp text-success me-3 mt-1"></i>
-                            <div>
-                                <strong>WhatsApp</strong><br>
-                                <a href="https://wa.me/62xxxxxxxxxx" class="text-decoration-none">
-                                    +62 xxx-xxxx-xxxx
-                                </a>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <small class="text-muted">
-                            Jam operasional: Senin – Jumat, 09.00 – 17.00 WIB
-                        </small>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 </section>
-
