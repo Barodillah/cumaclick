@@ -92,9 +92,27 @@
                         @if($link->destination_type === 'url')
                         <div class="col-md-12 mt-3">
                             <label class="form-label">Destination URL</label>
-                            <input name="destination_url"
-                                   class="form-control @error('destination_url') is-invalid @enderror"
-                                   value="{{ old('destination_url', $link->destination_url) }}">
+                        
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    @if(Str::startsWith($link->note, ['http://', 'https://']))
+                                        <img src="{{ $link->note }}"
+                                             width="16"
+                                             height="16"
+                                             alt="favicon">
+                                    @else
+                                        <i class="fa-solid fa-globe"></i>
+                                    @endif
+                                </span>
+                        
+                                <input name="destination_url"
+                                       class="form-control @error('destination_url') is-invalid @enderror"
+                                       value="{{ old('destination_url', $link->destination_url) }}">
+                        
+                                @error('destination_url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
                         @endif
                     </div>
@@ -207,23 +225,81 @@
 
                 {{-- META SECTION --}}
                 <div class="card shadow-sm-custom mb-4">
-                    <div class="card-header d-flex align-items-center">
-                        <div class="feature-icon"><i class="fa-solid fa-earth-americas"></i></div>
-                        Meta (SEO) & Catatan
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="feature-icon me-2">
+                                <i class="fa-solid fa-earth-americas"></i>
+                            </div>
+                            Meta (SEO) & Catatan
+                        </div>
+                    
+                        <button type="button"
+                            class="btn btn-sm"
+                            id="refreshMetaBtn"
+                            data-code="{{ $link->short_code }}">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
                     </div>
+
                     <div class="card-body p-4">
                         <label class="form-label">SEO Title</label>
-                        <input name="title" class="form-control mb-3" value="{{ old('title', $link->title) }}">
-
+                        <input name="title" id="seoTitle"
+                               class="form-control mb-3"
+                               value="{{ old('title', $link->title) }}">
+                    
                         <label class="form-label">SEO Description</label>
-                        <textarea name="description" class="form-control mb-3" rows="2">{{ old('description', $link->description) }}</textarea>
-                        
-                        <label class="form-label">Catatan Pribadi</label>
-                        <textarea name="note" class="form-control" rows="2">{{ old('note', $link->note) }}</textarea>
+                        <textarea name="description"
+                                  id="seoDescription"
+                                  class="form-control mb-3"
+                                  rows="2">{{ old('description', $link->description) }}</textarea>
+                    
+                        <label class="form-label">Catatan / Favicon</label>
+                        <div class="input-group">
+                            <span class="input-group-text" id="faviconPreview">
+                                @if(Str::startsWith($link->note, ['http://','https://']))
+                                    <img src="{{ $link->note }}" width="16" height="16">
+                                @else
+                                    <i class="fa-solid fa-note-sticky"></i>
+                                @endif
+                            </span>
+                            <input type="text"
+                                   name="note"
+                                   id="seoNote"
+                                   class="form-control"
+                                   value="{{ old('note', $link->note) }}">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <script>
+        document.getElementById('refreshMetaBtn').addEventListener('click', function () {
+            const code = this.dataset.code;
+            this.disabled = true;
+        
+            fetch(`/links/${code}/refresh-meta`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(res => res.json())
+            .then(res => {
+                document.getElementById('seoTitle').value = res.title ?? '';
+                document.getElementById('seoDescription').value = res.description ?? '';
+                document.getElementById('seoNote').value = res.favicon ?? '';
+        
+                const icon = document.getElementById('faviconPreview');
+                if (res.favicon && res.favicon.startsWith('http')) {
+                    icon.innerHTML = `<img src="${res.favicon}" width="16" height="16">`;
+                } else {
+                    icon.innerHTML = `<i class="fa-solid fa-note-sticky"></i>`;
+                }
+            })
+            .finally(() => this.disabled = false);
+        });
+        </script>
 
         {{-- STICKY ACTION BAR --}}
         <div class="sticky-bottom-bar d-flex justify-content-between align-items-center">
