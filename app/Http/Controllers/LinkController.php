@@ -191,6 +191,8 @@ class LinkController extends Controller
             'title'          => 'nullable|string|max:100',
             'description'    => 'nullable|string|max:255',
             'note'           => 'nullable|string',
+            
+            'charges'        => 'nullable|json', // validation untuk charges
         ];
 
         // 🔥 VALIDASI KHUSUS JIKA TYPE = URL
@@ -199,6 +201,53 @@ class LinkController extends Controller
         }
 
         $data = $request->validate($rules);
+
+        // 💰 PROSES PEMBAYARAN (HANYA JIKA ADA CHARGES)
+        if ($request->filled('charges')) {
+            $charges = json_decode($request->charges, true);
+            
+            if (!empty($charges)) {
+                $user = auth()->user();
+                $wallet = $user->wallet;
+                
+                if (!$wallet) {
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->withErrors(['charges' => 'Wallet tidak ditemukan.']);
+                }
+                
+                $total = collect($charges)->sum('price');
+                
+                if ($wallet->balance < $total) {
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->withErrors(['charges' => 'Saldo coin tidak mencukupi untuk upgrade fitur.']);
+                }
+                
+                // Proses pembayaran dalam transaction
+                \DB::transaction(function () use ($wallet, $charges, $link, $total) {
+                    // 1. Kurangi saldo total
+                    $wallet->decrement('balance', $total);
+                    
+                    // 2. Catat transaksi PER FITUR
+                    foreach ($charges as $item) {
+                        $wallet->transactions()->create([
+                            'type' => 'debit',
+                            'amount' => $item['price'],
+                            'source' => 'feature_upgrade',
+                            'related_type' => 'short_links',
+                            'related_id' => $link->id,
+                            'description' => 'Upgrade feature: ' . $item['label'],
+                            'meta' => json_encode([
+                                'feature' => $item['key']
+                            ])
+                        ]);
+                    }
+                });
+            }
+        }
 
         // 🔒 PERTAHANKAN destination_type
         $data['destination_type'] = $link->destination_type;
@@ -209,6 +258,9 @@ class LinkController extends Controller
         $data['enable_preview'] = $request->boolean('enable_preview');
         $data['require_otp'] = $request->boolean('require_otp');
         $data['enable_ads']  = $request->boolean('enable_ads');
+
+        // Hapus charges dari data yang akan di-update
+        unset($data['charges']);
 
         $link->update($data);
 

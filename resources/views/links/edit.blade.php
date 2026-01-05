@@ -18,11 +18,18 @@
 <div class="container py-4">
     <div class="d-flex align-items-center mb-4">
         <h3 class="fw-bold mb-0"><a href="{{ route('links.index') }}"><i class="fa-solid fa-angle-left me-2"></i></a> Edit Shortlink</h3>
-    </div>
+    </div> 
 
     @if(session('msg'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="fa-solid fa-circle-check me-2"></i> {{ session('msg') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if($errors->has('charges'))
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i> {{ $errors->first('charges') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
@@ -44,6 +51,7 @@
         @csrf
         @method('PUT')
         <input type="hidden" id="link_id" value="{{ $link->id }}">
+        <input type="hidden" name="charges" id="charges_input" value="">
         <div class="row">
             <div class="col-lg-8">
                 {{-- BASIC SECTION --}}
@@ -60,6 +68,9 @@
                                 <input name="short_code" id="short_code"
                                        class="form-control @error('short_code') is-invalid @enderror"
                                        value="{{ old('short_code', $link->short_code) }}">
+                                       @error('short_code')
+                                       <div class="invalid-feedback">{{ $message }}</div>
+                                       @enderror
                             </div>
                             <small class="text-muted">Code unik untuk tautan Anda.</small>
                         </div>
@@ -70,6 +81,9 @@
                                    class="form-control @error('custom_alias') is-invalid @enderror"
                                    value="{{ old('custom_alias', $link->custom_alias) }}"
                                    placeholder="Contoh: promo-awal-tahun">
+                                   @error('custom_alias')
+                                       <div class="invalid-feedback">{{ $message }}</div>
+                                   @enderror
                             <small class="text-muted">Alias yang lebih mudah diingat (Min. 6 Karakter).</small>
                         </div>
 
@@ -163,12 +177,19 @@
                     <div class="card-body p-4 row g-3">
                         <div class="col-md-5">
                             <label class="form-label">PIN Code <span class="coin-text small ms-2">( <i class="fa-solid fa-coins"></i> {{ featurePrice('pin_code', auth()->user()->tier) }} Coins )</span></label>
-                            <input name="pin_code" id="pin_code" inputmode="numeric" maxlength="4" class="form-control text-center fw-bold border-danger" 
+                            <input name="pin_code" id="pin_code" inputmode="numeric" maxlength="4" class="form-control text-center fw-bold @error('pin_code') is-invalid @enderror"
+                                   placeholder="Contoh: 1234"
                                    style="letter-spacing: 5px;" value="{{ old('pin_code', $link->pin_code) }}" oninput="this.value = this.value.replace(/\D/g, '')">
+                                   @error('pin_code')
+                                       <div class="invalid-feedback">{{ $message }}</div>
+                                   @enderror
                         </div>
                         <div class="col-md-7">
                             <label class="form-label">Password Hint</label>
-                            <input name="password_hint" class="form-control" placeholder="Contoh: Tanggal lahir" value="{{ old('password_hint', $link->password_hint) }}">
+                            <input name="password_hint" class="form-control @error('password_hint') is-invalid @enderror" placeholder="Contoh: Tanggal lahir" value="{{ old('password_hint', $link->password_hint) }}">
+                            @error('password_hint')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-12">
                             <div class="form-check form-switch p-3 border rounded">
@@ -353,7 +374,11 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         }
     });
 
-    if (charges.length === 0) { this.submit(); return; }
+    if (charges.length === 0) { 
+        // Tidak ada charges, langsung submit
+        this.submit(); 
+        return; 
+    }
 
     let total = 0;
     let html = '<div class="text-start">';
@@ -373,19 +398,12 @@ document.getElementById('editForm').addEventListener('submit', function (e) {
         cancelButtonText: 'Batal'
     }).then(res => {
         if (!res.isConfirmed) return;
-        fetch("{{ route('features.pay') }}", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content },
-            body: JSON.stringify({
-                link_id: linkId,
-                charges
-            })
-        })
-        .then(res => res.json())
-        .then(res => {
-            if (res.status === 'error') { Swal.fire('Error', res.message, 'error'); return; }
-            document.getElementById('editForm').submit();
-        });
+        
+        // Simpan charges ke hidden input
+        document.getElementById('charges_input').value = JSON.stringify(charges);
+        
+        // Submit form ke server (server akan handle validasi + payment)
+        document.getElementById('editForm').submit();
     });
 });
 </script>
